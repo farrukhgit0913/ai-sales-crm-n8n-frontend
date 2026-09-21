@@ -1,172 +1,225 @@
 :host {
   display: block;
+  min-height: 100vh;
 }
 
 * {
   box-sizing: border-box;
 }
 
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-  background: #f5f7fb;
-  color: #172033;
-}
-
 .sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: #111827;
-  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+
   display: flex;
   flex-direction: column;
-  padding: 24px 16px;
+
+  background: #111827;
+  color: #ffffff;
+
+  border-right: 1px solid #1f2937;
+  z-index: 1000;
 }
 
 .brand {
+  height: 72px;
+  padding: 0 22px;
+
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 8px 30px;
+
+  border-bottom: 1px solid #1f2937;
 }
 
-.brand-icon {
-  width: 42px;
-  height: 42px;
+.brand-logo {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: #4f46e5;
+  background: #2563eb;
+
+  font-size: 14px;
   font-weight: 700;
 }
 
-.brand h1 {
-  margin: 0;
-  font-size: 17px;
+.brand strong {
+  display: block;
+
+  font-size: 15px;
+  line-height: 20px;
 }
 
 .brand span {
-  font-size: 12px;
+  display: block;
+
+  margin-top: 2px;
+
   color: #9ca3af;
+  font-size: 11px;
 }
 
-.navigation {
+/* Navigation */
+
+.sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+
+  padding: 18px 12px;
+  gap: 4px;
 }
 
-.navigation a {
+.sidebar-nav a {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+
+  min-height: 44px;
+  padding: 0 14px;
+
   border-radius: 8px;
+
   color: #9ca3af;
   text-decoration: none;
+
   font-size: 14px;
-  transition: 0.2s;
+  font-weight: 500;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
-.navigation a span {
-  width: 20px;
-  text-align: center;
-}
-
-.navigation a:hover,
-.navigation a.active {
+.sidebar-nav a:hover {
   background: #1f2937;
-  color: #fff;
+  color: #ffffff;
 }
 
-.navigation a.active {
-  background: #4f46e5;
+.sidebar-nav a.active {
+  background: #2563eb;
+  color: #ffffff;
 }
 
-.sidebar-footer {
-  margin-top: auto;
-  padding: 16px 8px 0;
-  border-top: 1px solid #293241;
-}
-
-.system-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.system-indicator span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-}
-
-.sidebar-footer small {
-  display: block;
-  color: #6b7280;
-  margin-top: 7px;
-}
+/* Main */
 
 .main-content {
-  flex: 1;
-  min-width: 0;
+  min-height: 100vh;
+  margin-left: 250px;
+
+  background: #f5f7fb;
 }
+
+/* Top bar */
 
 .topbar {
-  height: 76px;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  height: 72px;
+
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
+  justify-content: space-between;
+
+  padding: 0 28px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.topbar h2 {
+.topbar h1 {
   margin: 0;
+
   font-size: 20px;
+  line-height: 26px;
+  font-weight: 700;
+
+  color: #111827;
 }
 
-.topbar p {
-  margin: 3px 0 0;
+.topbar span {
+  display: block;
+
+  margin-top: 2px;
+
   color: #6b7280;
-  font-size: 13px;
+  font-size: 12px;
 }
 
-.new-lead-button {
-  background: #4f46e5;
-  color: #fff;
-  padding: 10px 16px;
+.new-lead-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 38px;
+  padding: 0 16px;
+
   border-radius: 7px;
+
+  background: #2563eb;
+  color: #ffffff;
+
   text-decoration: none;
-  font-size: 14px;
+
+  font-size: 13px;
   font-weight: 600;
 }
+
+.new-lead-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Page */
 
 .page-content {
   padding: 28px;
 }
 
-@media (max-width: 800px) {
+/* Mobile */
+
+@media (max-width: 900px) {
   .sidebar {
-    width: 70px;
-    padding: 16px 8px;
+    width: 220px;
   }
 
-  .brand div:not(.brand-icon),
-  .navigation a:not(.active)::after,
-  .sidebar-footer {
+  .main-content {
+    margin-left: 220px;
+  }
+
+  .page-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    width: 70px;
+  }
+
+  .brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .brand > div:not(.brand-logo) {
     display: none;
   }
 
-  .navigation a {
-    justify-content: center;
+  .sidebar-nav {
+    padding: 14px 8px;
   }
 
-  .navigation a span {
-    margin: 0;
+  .sidebar-nav a {
+    justify-content: center;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .main-content {
+    margin-left: 70px;
   }
 
   .topbar {

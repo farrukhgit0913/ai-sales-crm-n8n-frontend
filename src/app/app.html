@@ -1,89 +1,75 @@
-<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">AI</div>
+    <div>
+      <strong>Sales CRM</strong>
+      <span>AI + n8n</span>
+    </div>
+  </div>
 
-  <aside class="sidebar">
+  <nav class="sidebar-nav">
 
-    <div class="brand">
-      <div class="brand-icon">AI</div>
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      Dashboard
+    </a>
 
-      <div>
-        <h1>Sales CRM</h1>
-        <span>AI-powered</span>
-      </div>
+    <a
+      routerLink="/leads"
+      routerLinkActive="active"
+    >
+      Leads
+    </a>
+
+    <a
+      routerLink="/leads/new"
+      routerLinkActive="active"
+    >
+      New Lead
+    </a>
+
+    <a
+      routerLink="/ai"
+      routerLinkActive="active"
+    >
+      AI Test
+    </a>
+
+    <a
+      routerLink="/workflows"
+      routerLinkActive="active"
+    >
+      Workflows
+    </a>
+
+    <a
+      routerLink="/email"
+      routerLinkActive="active"
+    >
+      Email Test
+    </a>
+
+  </nav>
+</aside>
+
+<main class="main-content">
+
+  <header class="topbar">
+    <div>
+      <h1>AI Sales CRM</h1>
+      <span>AI-powered sales automation</span>
     </div>
 
-    <nav class="navigation">
+    <a routerLink="/leads/new" class="new-lead-btn">
+      + New Lead
+    </a>
+  </header>
 
-      <a routerLink="/dashboard"
-         routerLinkActive="active">
-        <span>▦</span>
-        Dashboard
-      </a>
+  <section class="page-content">
+    <router-outlet></router-outlet>
+  </section>
 
-      <a routerLink="/leads"
-         routerLinkActive="active">
-        <span>♙</span>
-        Leads
-      </a>
-
-      <a routerLink="/ai"
-         routerLinkActive="active">
-        <span>✦</span>
-        AI Test
-      </a>
-
-      <a routerLink="/workflows"
-         routerLinkActive="active">
-        <span>⚙</span>
-        Workflows
-      </a>
-
-      <a routerLink="/email"
-         routerLinkActive="active">
-        <span>✉</span>
-        Email Test
-      </a>
-
-    </nav>
-
-    <div class="sidebar-footer">
-
-      <div class="system-indicator">
-        <span></span>
-        Local System
-      </div>
-
-      <small>
-        Angular + Express + n8n
-      </small>
-
-    </div>
-
-  </aside>
-
-  <main class="main-content">
-
-    <header class="topbar">
-
-      <div>
-        <h2>AI Sales CRM</h2>
-        <p>Lead management & automation</p>
-      </div>
-
-      <a
-        class="new-lead-button"
-        routerLink="/leads/new"
-      >
-        + New Lead
-      </a>
-
-    </header>
-
-    <section class="page-content">
-
-      <router-outlet></router-outlet>
-
-    </section>
-
-  </main>
-
-</div>
+</main>
