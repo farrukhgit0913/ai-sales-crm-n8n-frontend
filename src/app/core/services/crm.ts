@@ -1,7 +1,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 
-import { Lead } from "../models/crm.models";
+import {
+  Lead,
+  SystemStatus
+} from "../models/crm.models";
 
 export interface EmailTestResponse {
   success: boolean;
@@ -31,9 +34,11 @@ export class CrmService {
   // SYSTEM
   // =========================
 
-  getSystemStatus() {
-    return this.http.get<SystemStatusResponse>(`${this.apiUrl}/status`);
-  }
+getSystemStatus() {
+  return this.http.get<SystemStatus>(
+    `${this.apiUrl}/status`
+  );
+}
 
   // =========================
   // AI

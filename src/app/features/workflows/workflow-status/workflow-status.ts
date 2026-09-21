@@ -4,16 +4,17 @@ import {
   signal
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule
+} from '@angular/common';
 
-import { CrmService } from '../../../core/services/crm';
+import {
+  CrmService
+} from '../../../core/services/crm';
 
-interface SystemStatusResponse {
-  status?: string;
-  message?: string;
-  workflows?: unknown[];
-  [key: string]: unknown;
-}
+import {
+  SystemStatus
+} from '../../../core/models/crm.models';
 
 @Component({
   selector: 'app-workflow-status',
@@ -24,61 +25,118 @@ interface SystemStatusResponse {
   templateUrl: './workflow-status.html',
   styleUrl: './workflow-status.scss'
 })
-export class WorkflowStatusComponent implements OnInit {
+export class WorkflowStatusComponent
+  implements OnInit {
 
-  readonly loading = signal(false);
+  // =========================
+  // STATE
+  // =========================
 
-  readonly error = signal('');
+  readonly status =
+    signal<SystemStatus | null>(null);
 
-  readonly status = signal<SystemStatusResponse | null>(null);
+  readonly loading =
+    signal(false);
 
+  readonly error =
+    signal('');
+
+
+  // =========================
+  // CONSTRUCTOR
+  // =========================
 
   constructor(
     private readonly crm: CrmService
   ) {}
 
 
+  // =========================
+  // INIT
+  // =========================
+
   ngOnInit(): void {
     this.loadStatus();
   }
 
 
+  // =========================
+  // LOAD STATUS
+  // =========================
+
   loadStatus(): void {
 
     this.loading.set(true);
-
     this.error.set('');
 
-    this.crm.getSystemStatus().subscribe({
+    this.crm
+      .getSystemStatus()
+      .subscribe({
 
-      next: (response: SystemStatusResponse) => {
+        next: (response: SystemStatus) => {
 
-        console.log(
-          'System status response:',
-          response
-        );
+          this.status.set(response);
 
-        this.status.set(response);
+          this.loading.set(false);
 
-        this.loading.set(false);
-      },
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Workflow status error:',
+            error
+          );
+
+          this.error.set(
+            'Unable to load workflow status.'
+          );
+
+          this.loading.set(false);
+
+        }
+
+      });
+
+  }
 
 
-      error: (error: unknown) => {
+  // =========================
+  // SERVICE STATUS
+  // =========================
 
-        console.error(
-          'System status error:',
-          error
-        );
+  isOnline(
+    service: string
+  ): boolean {
 
-        this.loading.set(false);
+    return this.status()
+      ?.services?.[service]
+      ?.status === 'online';
 
-        this.error.set(
-          'Unable to load system status.'
-        );
-      }
+  }
 
-    });
+
+  // =========================
+  // STATUS FORMATTER
+  // =========================
+
+  formatStatus(
+    status?: string
+  ): string {
+
+    if (!status) {
+      return 'Unknown';
+    }
+
+    return status
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(
+        /\b\w/g,
+        char => char.toUpperCase()
+      );
+
   }
 
 }

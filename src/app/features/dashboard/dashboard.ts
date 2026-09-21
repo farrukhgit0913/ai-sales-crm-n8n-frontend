@@ -192,7 +192,7 @@ export class DashboardComponent implements OnInit {
         next: (response) => {
 
           this.status.set(
-            response as SystemStatus
+            response
           );
 
           statusLoaded = true;

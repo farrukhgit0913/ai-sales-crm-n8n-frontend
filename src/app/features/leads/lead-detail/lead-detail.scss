@@ -385,7 +385,7 @@
   min-width: 0;
 }
 
-.detail > span {
+.detail>span {
   color: #94a3b8;
 
   font-size: 12px;
@@ -451,11 +451,9 @@
   border-color: #e0e7ff;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #ffffff 0%,
-      #f8f9ff 100%
-    );
+      #f8f9ff 100%);
 }
 
 .ai-left {
@@ -494,9 +492,16 @@
 }
 
 .ai-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
   height: 42px;
 
   flex-shrink: 0;
+
+  min-width: 190px;
 
   padding: 0 18px;
 
@@ -509,9 +514,26 @@
   font-size: 13px;
   font-weight: 700;
 
-  cursor: not-allowed;
+  cursor: pointer;
 
-  opacity: 0.55;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.ai-button:hover:not(:disabled) {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.ai-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ai-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 

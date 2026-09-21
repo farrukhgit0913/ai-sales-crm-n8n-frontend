@@ -1,39 +1,21 @@
-import {
-  Component,
-  OnInit,
-  signal
-} from '@angular/core';
+import { Component, OnInit, signal } from "@angular/core";
 
-import {
-  CommonModule
-} from '@angular/common';
+import { CommonModule } from "@angular/common";
 
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 
-import {
-  CrmService
-} from '../../../core/services/crm';
+import { CrmService } from "../../../core/services/crm";
 
-import {
-  Lead
-} from '../../../core/models/crm.models';
+import { Lead } from "../../../core/models/crm.models";
 
 @Component({
-  selector: 'app-lead-detail',
+  selector: "app-lead-detail",
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink
-  ],
-  templateUrl: './lead-detail.html',
-  styleUrl: './lead-detail.scss'
+  imports: [CommonModule, RouterLink],
+  templateUrl: "./lead-detail.html",
+  styleUrl: "./lead-detail.scss",
 })
 export class LeadDetailComponent implements OnInit {
-
   // --------------------------------------------------
   // Lead
   // --------------------------------------------------
@@ -42,8 +24,7 @@ export class LeadDetailComponent implements OnInit {
 
   readonly loading = signal(false);
 
-  readonly error = signal('');
-
+  readonly error = signal("");
 
   // --------------------------------------------------
   // AI Qualification
@@ -51,7 +32,7 @@ export class LeadDetailComponent implements OnInit {
 
   readonly aiLoading = signal(false);
 
-  readonly aiError = signal('');
+  readonly aiError = signal("");
 
   readonly aiResult = signal<{
     qualification: string;
@@ -61,13 +42,11 @@ export class LeadDetailComponent implements OnInit {
     model?: string;
   } | null>(null);
 
-
   // --------------------------------------------------
   // Lead ID
   // --------------------------------------------------
 
-  private leadId = '';
-
+  private leadId = "";
 
   // --------------------------------------------------
   // Constructor
@@ -76,24 +55,18 @@ export class LeadDetailComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly crm: CrmService
+    private readonly crm: CrmService,
   ) {}
-
 
   // --------------------------------------------------
   // Init
   // --------------------------------------------------
 
   ngOnInit(): void {
-
-    this.leadId =
-      this.route.snapshot.paramMap.get('id') ?? '';
+    this.leadId = this.route.snapshot.paramMap.get("id") ?? "";
 
     if (!this.leadId) {
-
-      this.error.set(
-        'Lead ID is missing.'
-      );
+      this.error.set("Lead ID is missing.");
 
       return;
     }
@@ -101,274 +74,155 @@ export class LeadDetailComponent implements OnInit {
     this.loadLead();
   }
 
-
   // --------------------------------------------------
   // Load Lead
   // --------------------------------------------------
 
   loadLead(): void {
-
     this.loading.set(true);
 
-    this.error.set('');
+    this.error.set("");
 
-    this.crm.getLead(
-      this.leadId
-    ).subscribe({
-
+    this.crm.getLead(this.leadId).subscribe({
       next: (response) => {
-
-        this.lead.set(
-          response.lead
-        );
+        this.lead.set(response.lead);
 
         this.loading.set(false);
-
       },
 
       error: (error) => {
+        console.error("Lead detail error:", error);
 
-        console.error(
-          'Lead detail error:',
-          error
-        );
-
-        this.error.set(
-          error?.error?.error ||
-          'Unable to load lead.'
-        );
+        this.error.set(error?.error?.error || "Unable to load lead.");
 
         this.loading.set(false);
-
-      }
-
+      },
     });
   }
-
 
   // --------------------------------------------------
   // AI Qualification
   // --------------------------------------------------
 
   runAiQualification(): void {
-
     if (!this.leadId) {
       return;
     }
 
     this.aiLoading.set(true);
-
-    this.aiError.set('');
-
+    this.aiError.set("");
     this.aiResult.set(null);
 
-    this.crm
-      .qualifyLead(
-        this.leadId
-      )
-      .subscribe({
+    this.crm.qualifyLead(this.leadId).subscribe({
+      next: (response) => {
+        this.aiResult.set({
+          qualification: response.qualification,
+          score: response.score,
+          reason: response.reason,
+          recommendation: response.recommendation,
+          model: response.model,
+        });
 
-        next: (response) => {
+        this.aiLoading.set(false);
+      },
 
-          this.aiResult.set({
+      error: (error) => {
+        console.error("AI qualification error:", error);
 
-            qualification:
-              response.qualification,
+        this.aiError.set(error?.error?.error || "Unable to qualify this lead.");
 
-            score:
-              response.score,
-
-            reason:
-              response.reason,
-
-            recommendation:
-              response.recommendation,
-
-            model:
-              response.model
-
-          });
-
-          this.aiLoading.set(false);
-
-        },
-
-        error: (error) => {
-
-          console.error(
-            'AI qualification error:',
-            error
-          );
-
-          this.aiError.set(
-            error?.error?.error ||
-            'Unable to qualify this lead.'
-          );
-
-          this.aiLoading.set(false);
-
-        }
-
-      });
+        this.aiLoading.set(false);
+      },
+    });
   }
-
 
   // --------------------------------------------------
   // Edit Lead
   // --------------------------------------------------
 
   editLead(): void {
-
-    this.router.navigate([
-      '/leads',
-      this.leadId,
-      'edit'
-    ]);
-
+    this.router.navigate(["/leads", this.leadId, "edit"]);
   }
-
 
   // --------------------------------------------------
   // Delete Lead
   // --------------------------------------------------
 
   deleteLead(): void {
-
-    const currentLead =
-      this.lead();
+    const currentLead = this.lead();
 
     if (!currentLead) {
       return;
     }
 
-    const confirmed =
-      window.confirm(
-        `Are you sure you want to delete ${currentLead.name || 'this lead'}?`
-      );
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${currentLead.name || "this lead"}?`,
+    );
 
     if (!confirmed) {
       return;
     }
 
-    this.crm
-      .deleteLead(
-        this.leadId
-      )
-      .subscribe({
+    this.crm.deleteLead(this.leadId).subscribe({
+      next: () => {
+        this.router.navigate(["/leads"]);
+      },
 
-        next: () => {
+      error: (error) => {
+        console.error("Delete lead error:", error);
 
-          this.router.navigate([
-            '/leads'
-          ]);
-
-        },
-
-        error: (error) => {
-
-          console.error(
-            'Delete lead error:',
-            error
-          );
-
-          this.error.set(
-            error?.error?.error ||
-            'Unable to delete lead.'
-          );
-
-        }
-
-      });
-
+        this.error.set(error?.error?.error || "Unable to delete lead.");
+      },
+    });
   }
-
 
   // --------------------------------------------------
   // Initials
   // --------------------------------------------------
 
-  getInitials(
-    name?: string
-  ): string {
-
+  getInitials(name?: string): string {
     if (!name?.trim()) {
-      return '?';
+      return "?";
     }
 
-    const parts =
-      name
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean);
+    const parts = name.trim().split(/\s+/).filter(Boolean);
 
     if (parts.length === 1) {
-
-      return parts[0]
-        .substring(0, 2)
-        .toUpperCase();
-
+      return parts[0].substring(0, 2).toUpperCase();
     }
 
-    return (
-      parts[0][0] +
-      parts[parts.length - 1][0]
-    ).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
-
 
   // --------------------------------------------------
   // Format Status
   // --------------------------------------------------
 
-  formatStatus(
-    status?: string
-  ): string {
-
+  formatStatus(status?: string): string {
     if (!status) {
-      return 'Unknown';
+      return "Unknown";
     }
 
     return status
-      .replace(
-        /[_-]+/g,
-        ' '
-      )
-      .replace(
-        /\s+/g,
-        ' '
-      )
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+/g, " ")
       .trim()
-      .replace(
-        /\b\w/g,
-        char =>
-          char.toUpperCase()
-      );
+      .replace(/\b\w/g, (char) => char.toUpperCase());
   }
-
 
   // --------------------------------------------------
   // Format Date
   // --------------------------------------------------
 
-  formatDate(
-    date?: string | Date
-  ): string {
-
+  formatDate(date?: string | Date): string {
     if (!date) {
-      return '—';
+      return "—";
     }
 
-    return new Date(
-      date
-    ).toLocaleDateString(
-      'en-US',
-      {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }
-    );
-
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   }
-
 }

@@ -6,10 +6,7 @@
 
   <div class="top-bar">
 
-    <a
-      routerLink="/leads"
-      class="back-link"
-    >
+    <a routerLink="/leads" class="back-link">
       <span>←</span>
       Back to Leads
     </a>
@@ -23,19 +20,19 @@
 
   @if (loading()) {
 
-    <div class="state-card">
+  <div class="state-card">
 
-      <div class="spinner"></div>
+    <div class="spinner"></div>
 
-      <h3>
-        Loading lead...
-      </h3>
+    <h3>
+      Loading lead...
+    </h3>
 
-      <p>
-        Fetching lead information.
-      </p>
+    <p>
+      Fetching lead information.
+    </p>
 
-    </div>
+  </div>
 
   }
 
@@ -46,40 +43,33 @@
 
   @else if (error()) {
 
-    <div class="state-card error-state">
+  <div class="state-card error-state">
 
-      <div class="state-icon">
-        !
-      </div>
+    <div class="state-icon">
+      !
+    </div>
 
-      <h3>
-        Unable to load lead
-      </h3>
+    <h3>
+      Unable to load lead
+    </h3>
 
-      <p>
-        {{ error() }}
-      </p>
+    <p>
+      {{ error() }}
+    </p>
 
-      <div class="state-actions">
+    <div class="state-actions">
 
-        <button
-          type="button"
-          class="secondary-button"
-          (click)="loadLead()"
-        >
-          Try Again
-        </button>
+      <button type="button" class="secondary-button" (click)="loadLead()">
+        Try Again
+      </button>
 
-        <a
-          routerLink="/leads"
-          class="secondary-button"
-        >
-          Back to Leads
-        </a>
-
-      </div>
+      <a routerLink="/leads" class="secondary-button">
+        Back to Leads
+      </a>
 
     </div>
+
+  </div>
 
   }
 
@@ -90,122 +80,208 @@
 
   @else if (lead(); as currentLead) {
 
-    <!-- Header -->
+  <!-- =========================
+         HEADER
+         ========================= -->
 
-    <div class="page-header">
+  <div class="page-header">
 
-      <div class="lead-heading">
+    <div class="lead-heading">
 
-        <div class="lead-avatar">
-          {{ getInitials(currentLead.name) }}
-        </div>
-
-        <div>
-
-          <span class="eyebrow">
-            Lead Details
-          </span>
-
-          <h1>
-            {{ currentLead.name || 'Unnamed Lead' }}
-          </h1>
-
-          <p>
-            {{ currentLead.company || 'No company specified' }}
-          </p>
-
-        </div>
-
+      <div class="lead-avatar">
+        {{ getInitials(currentLead.name) }}
       </div>
 
+      <div>
 
-      <div class="header-actions">
+        <span class="eyebrow">
+          Lead Details
+        </span>
 
-        <button
-          type="button"
-          class="edit-button"
-          (click)="editLead()"
-        >
-          <span>✎</span>
-          Edit Lead
-        </button>
+        <h1>
+          {{ currentLead.name || 'Unnamed Lead' }}
+        </h1>
 
-        <button
-          type="button"
-          class="delete-button"
-          (click)="deleteLead()"
-        >
-          Delete
-        </button>
+        <p>
+          {{ currentLead.company || 'No company specified' }}
+        </p>
 
       </div>
 
     </div>
 
 
-    <!-- =========================
+    <div class="header-actions">
+
+      <button type="button" class="edit-button" (click)="editLead()">
+        <span>✎</span>
+        Edit Lead
+      </button>
+
+      <button type="button" class="delete-button" (click)="deleteLead()">
+        Delete
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
          STATUS
          ========================= -->
 
-    <section class="status-card">
+  <section class="status-card">
 
-      <div>
+    <div>
 
-        <span class="section-label">
-          Current Status
-        </span>
+      <span class="section-label">
+        Current Status
+      </span>
 
-        <span
-          class="status"
-
-          [class.new]="
+      <span class="status" [class.new]="
             currentLead.status === 'new'
-          "
-
-          [class.contacted]="
+          " [class.contacted]="
             currentLead.status === 'contacted'
-          "
-
-          [class.qualified]="
+          " [class.qualified]="
             currentLead.status === 'qualified'
-          "
-
-          [class.proposal]="
+          " [class.proposal]="
             currentLead.status === 'proposal'
-          "
-
-          [class.negotiation]="
+          " [class.negotiation]="
             currentLead.status === 'negotiation'
-          "
-
-          [class.won]="
+          " [class.won]="
             currentLead.status === 'won' ||
             currentLead.status === 'converted'
-          "
-
-          [class.lost]="
+          " [class.lost]="
             currentLead.status === 'lost'
-          "
-        >
+          ">
 
-          <span class="status-dot"></span>
+        <span class="status-dot"></span>
 
-          {{ formatStatus(currentLead.status) }}
+        {{ formatStatus(currentLead.status) }}
 
-        </span>
+      </span>
+
+    </div>
+
+
+    <div class="created-info">
+
+      <span>
+        Created
+      </span>
+
+      <strong>
+        {{ formatDate(currentLead.createdAt) }}
+      </strong>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+         INFORMATION GRID
+         ========================= -->
+
+  <div class="content-grid">
+
+
+    <!-- =========================
+           CONTACT INFORMATION
+           ========================= -->
+
+    <section class="card">
+
+      <div class="card-header">
+
+        <div>
+
+          <span class="card-label">
+            Contact
+          </span>
+
+          <h2>
+            Contact Information
+          </h2>
+
+        </div>
 
       </div>
 
 
-      <div class="created-info">
+      <div class="details-grid">
 
-        <span>
-          Created
-        </span>
+        <div class="detail">
 
-        <strong>
-          {{ formatDate(currentLead.createdAt) }}
-        </strong>
+          <span>
+            Full Name
+          </span>
+
+          <strong>
+            {{ currentLead.name || '—' }}
+          </strong>
+
+        </div>
+
+
+        <div class="detail">
+
+          <span>
+            Company
+          </span>
+
+          <strong>
+            {{ currentLead.company || '—' }}
+          </strong>
+
+        </div>
+
+
+        <div class="detail">
+
+          <span>
+            Email
+          </span>
+
+          @if (currentLead.email) {
+
+          <a [href]="'mailto:' + currentLead.email">
+            {{ currentLead.email }}
+          </a>
+
+          } @else {
+
+          <strong>
+            —
+          </strong>
+
+          }
+
+        </div>
+
+
+        <div class="detail">
+
+          <span>
+            Phone
+          </span>
+
+          @if (currentLead.phone) {
+
+          <a [href]="'tel:' + currentLead.phone">
+            {{ currentLead.phone }}
+          </a>
+
+          } @else {
+
+          <strong>
+            —
+          </strong>
+
+          }
+
+        </div>
 
       </div>
 
@@ -213,267 +289,159 @@
 
 
     <!-- =========================
-         INFORMATION GRID
-         ========================= -->
-
-    <div class="content-grid">
-
-
-      <!-- =========================
-           CONTACT INFORMATION
-           ========================= -->
-
-      <section class="card">
-
-        <div class="card-header">
-
-          <div>
-
-            <span class="card-label">
-              Contact
-            </span>
-
-            <h2>
-              Contact Information
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div class="details-grid">
-
-          <div class="detail">
-
-            <span>
-              Full Name
-            </span>
-
-            <strong>
-              {{ currentLead.name || '—' }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail">
-
-            <span>
-              Company
-            </span>
-
-            <strong>
-              {{ currentLead.company || '—' }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail">
-
-            <span>
-              Email
-            </span>
-
-            @if (currentLead.email) {
-
-              <a
-                [href]="'mailto:' + currentLead.email"
-              >
-                {{ currentLead.email }}
-              </a>
-
-            } @else {
-
-              <strong>
-                —
-              </strong>
-
-            }
-
-          </div>
-
-
-          <div class="detail">
-
-            <span>
-              Phone
-            </span>
-
-            @if (currentLead.phone) {
-
-              <a
-                [href]="'tel:' + currentLead.phone"
-              >
-                {{ currentLead.phone }}
-              </a>
-
-            } @else {
-
-              <strong>
-                —
-              </strong>
-
-            }
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =========================
            SALES INFORMATION
            ========================= -->
 
-      <section class="card">
+    <section class="card">
 
-        <div class="card-header">
+      <div class="card-header">
 
-          <div>
+        <div>
 
-            <span class="card-label">
-              Sales
-            </span>
+          <span class="card-label">
+            Sales
+          </span>
 
-            <h2>
-              Sales Information
-            </h2>
+          <h2>
+            Sales Information
+          </h2>
 
-          </div>
+        </div>
+
+      </div>
+
+
+      <div class="details-grid">
+
+        <div class="detail">
+
+          <span>
+            Budget
+          </span>
+
+          <strong class="budget">
+            {{ currentLead.budget || '—' }}
+          </strong>
 
         </div>
 
 
-        <div class="details-grid">
+        <div class="detail">
 
-          <div class="detail">
+          <span>
+            Lead Source
+          </span>
 
-            <span>
-              Budget
-            </span>
-
-            <strong class="budget">
-              {{ currentLead.budget || '—' }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail">
-
-            <span>
-              Lead Source
-            </span>
-
-            <strong>
-              {{ currentLead.source || '—' }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail">
-
-            <span>
-              Status
-            </span>
-
-            <strong>
-              {{ formatStatus(currentLead.status) }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail">
-
-            <span>
-              Last Updated
-            </span>
-
-            <strong>
-              {{ formatDate(currentLead.updatedAt) }}
-            </strong>
-
-          </div>
+          <strong>
+            {{ currentLead.source || '—' }}
+          </strong>
 
         </div>
 
-      </section>
+
+        <div class="detail">
+
+          <span>
+            Status
+          </span>
+
+          <strong>
+            {{ formatStatus(currentLead.status) }}
+          </strong>
+
+        </div>
 
 
-      <!-- =========================
+        <div class="detail">
+
+          <span>
+            Last Updated
+          </span>
+
+          <strong>
+            {{ formatDate(currentLead.updatedAt) }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
            REQUIREMENT
            ========================= -->
 
-      <section class="card full-width">
+    <section class="card full-width">
 
-        <div class="card-header">
+      <div class="card-header">
 
-          <div>
+        <div>
 
-            <span class="card-label">
-              Opportunity
-            </span>
+          <span class="card-label">
+            Opportunity
+          </span>
 
-            <h2>
-              Requirement
-            </h2>
-
-          </div>
+          <h2>
+            Requirement
+          </h2>
 
         </div>
 
-
-        <div class="text-box">
-
-          {{ currentLead.requirement || 'No requirement provided.' }}
-
-        </div>
-
-      </section>
+      </div>
 
 
-      <!-- =========================
+      <div class="text-box">
+
+        {{ currentLead.requirement || 'No requirement provided.' }}
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
            MESSAGE
            ========================= -->
 
-      <section class="card full-width">
+    <section class="card full-width">
 
-        <div class="card-header">
+      <div class="card-header">
 
-          <div>
+        <div>
 
-            <span class="card-label">
-              Communication
-            </span>
+          <span class="card-label">
+            Communication
+          </span>
 
-            <h2>
-              Message
-            </h2>
-
-          </div>
+          <h2>
+            Message
+          </h2>
 
         </div>
 
-
-        <div class="text-box">
-
-          {{ currentLead.message || 'No message provided.' }}
-
-        </div>
-
-      </section>
+      </div>
 
 
-      <!-- =========================
+      <div class="text-box">
+
+        {{ currentLead.message || 'No message provided.' }}
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
            AI QUALIFICATION
            ========================= -->
 
-      <section class="card ai-card full-width">
+    <section class="card ai-card full-width">
+
+      <!-- AI HEADER -->
+
+      <div class="ai-header">
 
         <div class="ai-left">
 
@@ -502,17 +470,142 @@
         </div>
 
 
-        <button
-          type="button"
-          class="ai-button"
-          disabled
-        >
-          Run AI Qualification
+        <!-- AI BUTTON -->
+
+        <button type="button" class="ai-button" (click)="runAiQualification()">
+          @if (aiLoading()) {
+          <span class="button-spinner"></span>
+          Analyzing...
+          } @else {
+          ✦ Run AI Qualification
+          }
         </button>
 
-      </section>
+      </div>
 
-    </div>
+
+      <!-- =========================
+             AI ERROR
+             ========================= -->
+
+      @if (aiError()) {
+
+      <div class="ai-error">
+
+        <span>
+          !
+        </span>
+
+        {{ aiError() }}
+
+      </div>
+
+      }
+
+
+      <!-- =========================
+             AI RESULT
+             ========================= -->
+
+      @if (aiResult(); as result) {
+
+      <div class="ai-result">
+
+
+        <!-- SCORE -->
+
+        <div class="score-box">
+
+          <span>
+            Lead Score
+          </span>
+
+          <strong>
+            {{ result.score }}
+          </strong>
+
+          <small>
+            / 100
+          </small>
+
+        </div>
+
+
+        <!-- QUALIFICATION -->
+
+        <div class="qualification-box">
+
+          <span class="result-label">
+            Qualification
+          </span>
+
+          <span class="qualification" [class.qualified]="
+                  result.qualification === 'qualified'
+                " [class.potential]="
+                  result.qualification === 'potential'
+                " [class.unqualified]="
+                  result.qualification === 'unqualified'
+                ">
+
+            {{ result.qualification | titlecase }}
+
+          </span>
+
+        </div>
+
+
+        <!-- AI ANALYSIS -->
+
+        <div class="ai-result-section">
+
+          <span class="result-label">
+            AI Analysis
+          </span>
+
+          <p>
+            {{ result.reason }}
+          </p>
+
+        </div>
+
+
+        <!-- RECOMMENDATION -->
+
+        <div class="ai-recommendation">
+
+          <span class="result-label">
+            Recommended Next Action
+          </span>
+
+          <p>
+            {{ result.recommendation }}
+          </p>
+
+        </div>
+
+
+        <!-- MODEL -->
+
+        @if (result.model) {
+
+        <div class="ai-model">
+
+          Powered by
+          <strong>
+            {{ result.model }}
+          </strong>
+
+        </div>
+
+        }
+
+      </div>
+
+      }
+
+    </section>
+
+  </div>
 
   }
 
