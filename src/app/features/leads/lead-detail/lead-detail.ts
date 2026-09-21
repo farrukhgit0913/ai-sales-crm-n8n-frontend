@@ -4,15 +4,23 @@ import {
   signal
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule
+} from '@angular/common';
+
 import {
   ActivatedRoute,
   Router,
   RouterLink
 } from '@angular/router';
 
-import { CrmService } from '../../../core/services/crm';
-import { Lead } from '../../../core/models/crm.models';
+import {
+  CrmService
+} from '../../../core/services/crm';
+
+import {
+  Lead
+} from '../../../core/models/crm.models';
 
 @Component({
   selector: 'app-lead-detail',
@@ -26,11 +34,9 @@ import { Lead } from '../../../core/models/crm.models';
 })
 export class LeadDetailComponent implements OnInit {
 
-  /*
-   * =========================
-   * State
-   * =========================
-   */
+  // --------------------------------------------------
+  // Lead
+  // --------------------------------------------------
 
   readonly lead = signal<Lead | null>(null);
 
@@ -38,26 +44,45 @@ export class LeadDetailComponent implements OnInit {
 
   readonly error = signal('');
 
-  readonly deleting = signal(false);
 
-  readonly deleteError = signal('');
+  // --------------------------------------------------
+  // AI Qualification
+  // --------------------------------------------------
 
+  readonly aiLoading = signal(false);
+
+  readonly aiError = signal('');
+
+  readonly aiResult = signal<{
+    qualification: string;
+    score: number;
+    reason: string;
+    recommendation: string;
+    model?: string;
+  } | null>(null);
+
+
+  // --------------------------------------------------
+  // Lead ID
+  // --------------------------------------------------
 
   private leadId = '';
 
 
+  // --------------------------------------------------
+  // Constructor
+  // --------------------------------------------------
+
   constructor(
-    private readonly crm: CrmService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly crm: CrmService
   ) {}
 
 
-  /*
-   * =========================
-   * Lifecycle
-   * =========================
-   */
+  // --------------------------------------------------
+  // Init
+  // --------------------------------------------------
 
   ngOnInit(): void {
 
@@ -67,7 +92,7 @@ export class LeadDetailComponent implements OnInit {
     if (!this.leadId) {
 
       this.error.set(
-        'Lead ID was not provided.'
+        'Lead ID is missing.'
       );
 
       return;
@@ -77,139 +102,223 @@ export class LeadDetailComponent implements OnInit {
   }
 
 
-  /*
-   * =========================
-   * Load Lead
-   * =========================
-   */
+  // --------------------------------------------------
+  // Load Lead
+  // --------------------------------------------------
 
   loadLead(): void {
-
-    if (!this.leadId) {
-      return;
-    }
 
     this.loading.set(true);
 
     this.error.set('');
 
-    this.crm.getLead(this.leadId).subscribe({
+    this.crm.getLead(
+      this.leadId
+    ).subscribe({
 
       next: (response) => {
 
-        console.log(
-          'Lead detail response:',
-          response
-        );
-
-        /*
-         * Supports:
-         *
-         * { lead: {...} }
-         *
-         * or directly:
-         *
-         * {...}
-         */
-
-        const lead =
-          response?.lead ?? response;
-
         this.lead.set(
-          lead as Lead
+          response.lead
         );
 
         this.loading.set(false);
+
       },
 
-
-      error: (error: unknown) => {
+      error: (error) => {
 
         console.error(
           'Lead detail error:',
           error
         );
 
+        this.error.set(
+          error?.error?.error ||
+          'Unable to load lead.'
+        );
+
         this.loading.set(false);
 
-        this.error.set(
-          this.getErrorMessage(error)
-        );
       }
 
     });
   }
 
 
-  /*
-   * =========================
-   * Delete Lead
-   * =========================
-   */
+  // --------------------------------------------------
+  // AI Qualification
+  // --------------------------------------------------
+
+  runAiQualification(): void {
+
+    if (!this.leadId) {
+      return;
+    }
+
+    this.aiLoading.set(true);
+
+    this.aiError.set('');
+
+    this.aiResult.set(null);
+
+    this.crm
+      .qualifyLead(
+        this.leadId
+      )
+      .subscribe({
+
+        next: (response) => {
+
+          this.aiResult.set({
+
+            qualification:
+              response.qualification,
+
+            score:
+              response.score,
+
+            reason:
+              response.reason,
+
+            recommendation:
+              response.recommendation,
+
+            model:
+              response.model
+
+          });
+
+          this.aiLoading.set(false);
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'AI qualification error:',
+            error
+          );
+
+          this.aiError.set(
+            error?.error?.error ||
+            'Unable to qualify this lead.'
+          );
+
+          this.aiLoading.set(false);
+
+        }
+
+      });
+  }
+
+
+  // --------------------------------------------------
+  // Edit Lead
+  // --------------------------------------------------
+
+  editLead(): void {
+
+    this.router.navigate([
+      '/leads',
+      this.leadId,
+      'edit'
+    ]);
+
+  }
+
+
+  // --------------------------------------------------
+  // Delete Lead
+  // --------------------------------------------------
 
   deleteLead(): void {
 
     const currentLead =
       this.lead();
 
-    if (!currentLead?._id) {
+    if (!currentLead) {
       return;
     }
 
-
     const confirmed =
       window.confirm(
-        `Are you sure you want to delete "${currentLead.name}"?`
+        `Are you sure you want to delete ${currentLead.name || 'this lead'}?`
       );
-
 
     if (!confirmed) {
       return;
     }
 
+    this.crm
+      .deleteLead(
+        this.leadId
+      )
+      .subscribe({
 
-    this.deleting.set(true);
+        next: () => {
 
-    this.deleteError.set('');
+          this.router.navigate([
+            '/leads'
+          ]);
 
+        },
 
-    this.crm.deleteLead(
-      currentLead._id
-    ).subscribe({
+        error: (error) => {
 
-      next: () => {
+          console.error(
+            'Delete lead error:',
+            error
+          );
 
-        this.deleting.set(false);
+          this.error.set(
+            error?.error?.error ||
+            'Unable to delete lead.'
+          );
 
-        this.router.navigate([
-          '/leads'
-        ]);
-      },
+        }
 
+      });
 
-      error: (error: unknown) => {
-
-        console.error(
-          'Delete lead error:',
-          error
-        );
-
-        this.deleting.set(false);
-
-        this.deleteError.set(
-          this.getErrorMessage(error)
-        );
-      }
-
-    });
   }
 
 
-  /*
-   * =========================
-   * Status
-   * =========================
-   */
+  // --------------------------------------------------
+  // Initials
+  // --------------------------------------------------
+
+  getInitials(
+    name?: string
+  ): string {
+
+    if (!name?.trim()) {
+      return '?';
+    }
+
+    const parts =
+      name
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (parts.length === 1) {
+
+      return parts[0]
+        .substring(0, 2)
+        .toUpperCase();
+
+    }
+
+    return (
+      parts[0][0] +
+      parts[parts.length - 1][0]
+    ).toUpperCase();
+  }
+
+
+  // --------------------------------------------------
+  // Format Status
+  // --------------------------------------------------
 
   formatStatus(
     status?: string
@@ -220,108 +329,46 @@ export class LeadDetailComponent implements OnInit {
     }
 
     return status
-      .replace(/[_-]+/g, ' ')
-      .replace(/\s+/g, ' ')
+      .replace(
+        /[_-]+/g,
+        ' '
+      )
+      .replace(
+        /\s+/g,
+        ' '
+      )
       .trim()
-      .replace(/\b\w/g, char =>
-        char.toUpperCase()
+      .replace(
+        /\b\w/g,
+        char =>
+          char.toUpperCase()
       );
   }
 
 
-  getStatusClass(
-    status?: string
+  // --------------------------------------------------
+  // Format Date
+  // --------------------------------------------------
+
+  formatDate(
+    date?: string | Date
   ): string {
 
-    switch (
-      status?.trim().toLowerCase()
-    ) {
-
-      case 'new':
-        return 'status-new';
-
-      case 'qualified':
-        return 'status-qualified';
-
-      case 'contacted':
-        return 'status-contacted';
-
-      case 'proposal':
-        return 'status-proposal';
-
-      case 'negotiation':
-        return 'status-negotiation';
-
-      case 'converted':
-      case 'won':
-        return 'status-converted';
-
-      case 'lost':
-        return 'status-lost';
-
-      default:
-        return 'status-default';
-    }
-  }
-
-
-  /*
-   * =========================
-   * Error handling
-   * =========================
-   */
-
-  private getErrorMessage(
-    error: unknown
-  ): string {
-
-    if (!error) {
-      return 'Something went wrong.';
+    if (!date) {
+      return '—';
     }
 
-
-    if (typeof error === 'string') {
-      return error;
-    }
-
-
-    if (typeof error === 'object') {
-
-      const apiError = error as {
-        message?: string;
-
-        error?: {
-          message?: string;
-          error?: string;
-        };
-      };
-
-
-      if (
-        apiError.error &&
-        typeof apiError.error === 'object' &&
-        apiError.error.message
-      ) {
-        return apiError.error.message;
+    return new Date(
+      date
+    ).toLocaleDateString(
+      'en-US',
+      {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       }
+    );
 
-
-      if (
-        apiError.error &&
-        typeof apiError.error === 'object' &&
-        apiError.error.error
-      ) {
-        return apiError.error.error;
-      }
-
-
-      if (apiError.message) {
-        return apiError.message;
-      }
-    }
-
-
-    return 'Something went wrong.';
   }
 
 }

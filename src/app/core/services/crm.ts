@@ -32,9 +32,7 @@ export class CrmService {
   // =========================
 
   getSystemStatus() {
-    return this.http.get<SystemStatusResponse>(
-      `${this.apiUrl}/status`
-    );
+    return this.http.get<SystemStatusResponse>(`${this.apiUrl}/status`);
   }
 
   // =========================
@@ -42,26 +40,19 @@ export class CrmService {
   // =========================
 
   testAi(prompt: string) {
-    return this.http.post<AiTestResponse>(
-      `${this.apiUrl}/ai/test`,
-      {
-        prompt,
-      }
-    );
+    return this.http.post<AiTestResponse>(`${this.apiUrl}/ai/test`, {
+      prompt,
+    });
   }
 
   // =========================
   // EMAIL
   // =========================
 
-  testEmail(payload: {
-    to: string;
-    subject: string;
-    text: string;
-  }) {
+  testEmail(payload: { to: string; subject: string; text: string }) {
     return this.http.post<EmailTestResponse>(
       `${this.apiUrl}/email/test`,
-      payload
+      payload,
     );
   }
 
@@ -87,21 +78,24 @@ export class CrmService {
     }>(`${this.apiUrl}/leads`, payload);
   }
 
-  updateLead(
-    id: string,
-    payload: Partial<Lead>
-  ) {
+  updateLead(id: string, payload: Partial<Lead>) {
     return this.http.put<{
       lead: Lead;
-    }>(
-      `${this.apiUrl}/leads/${id}`,
-      payload
-    );
+    }>(`${this.apiUrl}/leads/${id}`, payload);
   }
 
   deleteLead(id: string) {
-    return this.http.delete(
-      `${this.apiUrl}/leads/${id}`
-    );
+    return this.http.delete(`${this.apiUrl}/leads/${id}`);
+  }
+
+  qualifyLead(id: string) {
+    return this.http.post<{
+      success: boolean;
+      qualification: string;
+      score: number;
+      reason: string;
+      recommendation: string;
+      model?: string;
+    }>(`${this.apiUrl}/leads/${id}/qualify`, {});
   }
 }

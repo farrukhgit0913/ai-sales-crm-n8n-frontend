@@ -1,8 +1,25 @@
 <div class="lead-detail-page">
 
   <!-- =========================
-       Loading
-  ========================== -->
+       TOP BAR
+       ========================= -->
+
+  <div class="top-bar">
+
+    <a
+      routerLink="/leads"
+      class="back-link"
+    >
+      <span>←</span>
+      Back to Leads
+    </a>
+
+  </div>
+
+
+  <!-- =========================
+       LOADING
+       ========================= -->
 
   @if (loading()) {
 
@@ -10,7 +27,13 @@
 
       <div class="spinner"></div>
 
-      <p>Loading lead...</p>
+      <h3>
+        Loading lead...
+      </h3>
+
+      <p>
+        Fetching lead information.
+      </p>
 
     </div>
 
@@ -18,14 +41,20 @@
 
 
   <!-- =========================
-       Error
-  ========================== -->
+       ERROR
+       ========================= -->
 
-  @if (!loading() && error()) {
+  @else if (error()) {
 
-    <div class="state-card error-card">
+    <div class="state-card error-state">
 
-      <h3>Unable to load lead</h3>
+      <div class="state-icon">
+        !
+      </div>
+
+      <h3>
+        Unable to load lead
+      </h3>
 
       <p>
         {{ error() }}
@@ -35,7 +64,7 @@
 
         <button
           type="button"
-          class="secondary-btn"
+          class="secondary-button"
           (click)="loadLead()"
         >
           Try Again
@@ -43,7 +72,7 @@
 
         <a
           routerLink="/leads"
-          class="primary-btn"
+          class="secondary-button"
         >
           Back to Leads
         </a>
@@ -56,61 +85,57 @@
 
 
   <!-- =========================
-       Lead
-  ========================== -->
+       LEAD CONTENT
+       ========================= -->
 
-  @if (!loading() && !error() && lead()) {
+  @else if (lead(); as currentLead) {
+
+    <!-- Header -->
 
     <div class="page-header">
 
-      <div>
+      <div class="lead-heading">
 
-        <a
-          routerLink="/leads"
-          class="back-link"
-        >
-          ← Back to Leads
-        </a>
+        <div class="lead-avatar">
+          {{ getInitials(currentLead.name) }}
+        </div>
 
-        <h2>
-          {{ lead()?.name || 'Unnamed Lead' }}
-        </h2>
+        <div>
 
-        <p>
-          Lead details and information.
-        </p>
+          <span class="eyebrow">
+            Lead Details
+          </span>
+
+          <h1>
+            {{ currentLead.name || 'Unnamed Lead' }}
+          </h1>
+
+          <p>
+            {{ currentLead.company || 'No company specified' }}
+          </p>
+
+        </div>
 
       </div>
 
 
       <div class="header-actions">
 
-        @if (lead()?._id) {
-
-          <a
-            [routerLink]="[
-              '/leads',
-              lead()?._id,
-              'edit'
-            ]"
-            class="secondary-btn"
-          >
-            Edit Lead
-          </a>
-
-        }
+        <button
+          type="button"
+          class="edit-button"
+          (click)="editLead()"
+        >
+          <span>✎</span>
+          Edit Lead
+        </button>
 
         <button
           type="button"
-          class="danger-btn"
-          [disabled]="deleting()"
+          class="delete-button"
           (click)="deleteLead()"
         >
-          @if (deleting()) {
-            Deleting...
-          } @else {
-            Delete
-          }
+          Delete
         </button>
 
       </div>
@@ -118,317 +143,374 @@
     </div>
 
 
-    <!-- Delete Error -->
+    <!-- =========================
+         STATUS
+         ========================= -->
 
-    @if (deleteError()) {
+    <section class="status-card">
 
-      <div class="delete-error">
-        {{ deleteError() }}
+      <div>
+
+        <span class="section-label">
+          Current Status
+        </span>
+
+        <span
+          class="status"
+
+          [class.new]="
+            currentLead.status === 'new'
+          "
+
+          [class.contacted]="
+            currentLead.status === 'contacted'
+          "
+
+          [class.qualified]="
+            currentLead.status === 'qualified'
+          "
+
+          [class.proposal]="
+            currentLead.status === 'proposal'
+          "
+
+          [class.negotiation]="
+            currentLead.status === 'negotiation'
+          "
+
+          [class.won]="
+            currentLead.status === 'won' ||
+            currentLead.status === 'converted'
+          "
+
+          [class.lost]="
+            currentLead.status === 'lost'
+          "
+        >
+
+          <span class="status-dot"></span>
+
+          {{ formatStatus(currentLead.status) }}
+
+        </span>
+
       </div>
 
-    }
+
+      <div class="created-info">
+
+        <span>
+          Created
+        </span>
+
+        <strong>
+          {{ formatDate(currentLead.createdAt) }}
+        </strong>
+
+      </div>
+
+    </section>
 
 
-    <div class="details-grid">
+    <!-- =========================
+         INFORMATION GRID
+         ========================= -->
+
+    <div class="content-grid">
+
 
       <!-- =========================
-           Main Information
-      ========================== -->
+           CONTACT INFORMATION
+           ========================= -->
 
-      <div class="details-card">
+      <section class="card">
 
         <div class="card-header">
 
           <div>
-            <h3>Lead Information</h3>
-            <p>Basic information about this lead.</p>
-          </div>
 
-          <span
-            class="status-badge"
-            [ngClass]="getStatusClass(lead()?.status)"
-          >
-            {{ formatStatus(lead()?.status) }}
-          </span>
+            <span class="card-label">
+              Contact
+            </span>
+
+            <h2>
+              Contact Information
+            </h2>
+
+          </div>
 
         </div>
 
 
-        <div class="info-grid">
+        <div class="details-grid">
 
-          <!-- Name -->
+          <div class="detail">
 
-          <div class="info-item">
-
-            <span class="info-label">
-              Name
+            <span>
+              Full Name
             </span>
 
-            <span class="info-value">
-              {{ lead()?.name || '—' }}
-            </span>
+            <strong>
+              {{ currentLead.name || '—' }}
+            </strong>
 
           </div>
 
 
-          <!-- Company -->
+          <div class="detail">
 
-          <div class="info-item">
-
-            <span class="info-label">
+            <span>
               Company
             </span>
 
-            <span class="info-value">
-              {{ lead()?.company || '—' }}
-            </span>
+            <strong>
+              {{ currentLead.company || '—' }}
+            </strong>
 
           </div>
 
 
-          <!-- Email -->
+          <div class="detail">
 
-          <div class="info-item">
-
-            <span class="info-label">
+            <span>
               Email
             </span>
 
-            @if (lead()?.email) {
+            @if (currentLead.email) {
 
               <a
-                [href]="'mailto:' + lead()?.email"
-                class="info-link"
+                [href]="'mailto:' + currentLead.email"
               >
-                {{ lead()?.email }}
+                {{ currentLead.email }}
               </a>
 
             } @else {
 
-              <span class="info-value">
+              <strong>
                 —
-              </span>
+              </strong>
 
             }
 
           </div>
 
 
-          <!-- Phone -->
+          <div class="detail">
 
-          <div class="info-item">
-
-            <span class="info-label">
+            <span>
               Phone
             </span>
 
-            @if (lead()?.phone) {
+            @if (currentLead.phone) {
 
               <a
-                [href]="'tel:' + lead()?.phone"
-                class="info-link"
+                [href]="'tel:' + currentLead.phone"
               >
-                {{ lead()?.phone }}
+                {{ currentLead.phone }}
               </a>
 
             } @else {
 
-              <span class="info-value">
+              <strong>
                 —
-              </span>
+              </strong>
 
             }
 
           </div>
 
+        </div>
 
-          <!-- Budget -->
+      </section>
 
-          <div class="info-item">
 
-            <span class="info-label">
+      <!-- =========================
+           SALES INFORMATION
+           ========================= -->
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div>
+
+            <span class="card-label">
+              Sales
+            </span>
+
+            <h2>
+              Sales Information
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+          <div class="detail">
+
+            <span>
               Budget
             </span>
 
-            @if (
-              lead()?.budget !== null &&
-              lead()?.budget !== undefined
-            ) {
-
-              <span class="info-value budget">
-                ${{ lead()?.budget | number }}
-              </span>
-
-            } @else {
-
-              <span class="info-value">
-                —
-              </span>
-
-            }
+            <strong class="budget">
+              {{ currentLead.budget || '—' }}
+            </strong>
 
           </div>
 
 
-          <!-- Status -->
+          <div class="detail">
 
-          <div class="info-item">
+            <span>
+              Lead Source
+            </span>
 
-            <span class="info-label">
+            <strong>
+              {{ currentLead.source || '—' }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail">
+
+            <span>
               Status
             </span>
 
-            <span class="info-value">
-              {{ formatStatus(lead()?.status) }}
-            </span>
+            <strong>
+              {{ formatStatus(currentLead.status) }}
+            </strong>
 
           </div>
 
 
-          <!-- Created -->
+          <div class="detail">
 
-          <div class="info-item">
-
-            <span class="info-label">
-              Created
+            <span>
+              Last Updated
             </span>
 
-            <span class="info-value">
-
-              @if (lead()?.createdAt) {
-
-                {{ lead()?.createdAt | date:'MMM d, yyyy h:mm a' }}
-
-              } @else {
-
-                —
-
-              }
-
-            </span>
-
-          </div>
-
-
-          <!-- Updated -->
-
-          <div class="info-item">
-
-            <span class="info-label">
-              Updated
-            </span>
-
-            <span class="info-value">
-
-              @if (lead()?.updatedAt) {
-
-                {{ lead()?.updatedAt | date:'MMM d, yyyy h:mm a' }}
-
-              } @else {
-
-                —
-
-              }
-
-            </span>
+            <strong>
+              {{ formatDate(currentLead.updatedAt) }}
+            </strong>
 
           </div>
 
         </div>
 
-      </div>
+      </section>
 
 
       <!-- =========================
-           Requirement
-      ========================== -->
+           REQUIREMENT
+           ========================= -->
 
-      <div class="details-card">
+      <section class="card full-width">
 
         <div class="card-header">
 
           <div>
-            <h3>Requirement</h3>
-            <p>What the lead is looking for.</p>
+
+            <span class="card-label">
+              Opportunity
+            </span>
+
+            <h2>
+              Requirement
+            </h2>
+
           </div>
 
         </div>
 
 
-        <div class="requirement-content">
+        <div class="text-box">
 
-          @if (lead()?.requirement) {
-
-            {{ lead()?.requirement }}
-
-          } @else {
-
-            <span class="muted">
-              No requirement provided.
-            </span>
-
-          }
+          {{ currentLead.requirement || 'No requirement provided.' }}
 
         </div>
 
-      </div>
+      </section>
 
 
       <!-- =========================
-           Contact
-      ========================== -->
+           MESSAGE
+           ========================= -->
 
-      <div class="details-card">
+      <section class="card full-width">
 
         <div class="card-header">
 
           <div>
-            <h3>Contact</h3>
-            <p>Contact information for this lead.</p>
-          </div>
-        </div>
 
-
-        <div class="contact-actions">
-
-          @if (lead()?.email) {
-
-            <a
-              [href]="'mailto:' + lead()?.email"
-              class="contact-btn"
-            >
-              ✉ Email
-            </a>
-
-          }
-
-
-          @if (lead()?.phone) {
-
-            <a
-              [href]="'tel:' + lead()?.phone"
-              class="contact-btn"
-            >
-              ☎ Call
-            </a>
-
-          }
-
-
-          @if (
-            !lead()?.email &&
-            !lead()?.phone
-          ) {
-
-            <span class="muted">
-              No contact information available.
+            <span class="card-label">
+              Communication
             </span>
 
-          }
+            <h2>
+              Message
+            </h2>
+
+          </div>
 
         </div>
 
-      </div>
+
+        <div class="text-box">
+
+          {{ currentLead.message || 'No message provided.' }}
+
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           AI QUALIFICATION
+           ========================= -->
+
+      <section class="card ai-card full-width">
+
+        <div class="ai-left">
+
+          <div class="ai-icon">
+            ✦
+          </div>
+
+          <div>
+
+            <span class="card-label">
+              AI Sales Assistant
+            </span>
+
+            <h2>
+              AI Qualification
+            </h2>
+
+            <p>
+              Analyze this lead using AI to determine
+              purchase intent, lead quality, and the
+              recommended next sales action.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="ai-button"
+          disabled
+        >
+          Run AI Qualification
+        </button>
+
+      </section>
 
     </div>
 
