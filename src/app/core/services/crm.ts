@@ -33,7 +33,7 @@ export class CrmService {
 
   getSystemStatus() {
     return this.http.get<SystemStatusResponse>(
-      `${this.apiUrl}/system/status`
+      `${this.apiUrl}/status`
     );
   }
 

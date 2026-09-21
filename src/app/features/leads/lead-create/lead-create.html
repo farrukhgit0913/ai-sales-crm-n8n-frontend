@@ -2,22 +2,16 @@
 
   <div class="page-header">
 
-    <div>
-      <a
-        routerLink="/leads"
-        class="back-link"
-      >
-        ← Back to Leads
-      </a>
+    <a routerLink="/leads" class="back-link">
+      ← Back to leads
+    </a>
 
-      <h1>Create Lead</h1>
+    <h1>Create lead</h1>
 
-      <p>
-        Add a new sales lead to your CRM.
-      </p>
-    </div>
+    <p>Add a new sales lead to your pipeline.</p>
 
   </div>
+
 
   @if (error()) {
     <div class="error-message">
@@ -31,37 +25,24 @@
     </div>
   }
 
+
   <div class="form-card">
 
     <div class="form-grid">
 
-      <!-- Name -->
-
       <div class="form-group">
-
-        <label for="name">
-          Name *
-        </label>
-
+        <label for="name">Name <span class="required">*</span></label>
         <input
           id="name"
           type="text"
           [ngModel]="name()"
           (ngModelChange)="name.set($event)"
-          placeholder="Lead name"
+          placeholder="Full name"
         />
-
       </div>
 
-
-      <!-- Company -->
-
       <div class="form-group">
-
-        <label for="company">
-          Company
-        </label>
-
+        <label for="company">Company</label>
         <input
           id="company"
           type="text"
@@ -69,142 +50,72 @@
           (ngModelChange)="company.set($event)"
           placeholder="Company name"
         />
-
       </div>
 
-
-      <!-- Email -->
-
       <div class="form-group">
-
-        <label for="email">
-          Email *
-        </label>
-
+        <label for="email">Email <span class="required">*</span></label>
         <input
           id="email"
           type="email"
           [ngModel]="email()"
           (ngModelChange)="email.set($event)"
-          placeholder="Email address"
+          placeholder="name@company.com"
         />
-
       </div>
 
-
-      <!-- Phone -->
-
       <div class="form-group">
-
-        <label for="phone">
-          Phone
-        </label>
-
+        <label for="phone">Phone</label>
         <input
           id="phone"
           type="text"
           [ngModel]="phone()"
           (ngModelChange)="phone.set($event)"
-          placeholder="Phone number"
+          placeholder="+1 (555) 000-0000"
         />
-
       </div>
 
-
-      <!-- Budget -->
-
       <div class="form-group">
-
-        <label for="budget">
-          Budget
-        </label>
-
+        <label for="budget">Budget</label>
         <input
           id="budget"
           type="number"
           [ngModel]="budget()"
-          (ngModelChange)="
-            budget.set(
-              $event === ''
-                ? null
-                : +$event
-            )
-          "
-          placeholder="Budget"
+          (ngModelChange)="budget.set($event === '' ? null : +$event)"
+          placeholder="0"
         />
-
       </div>
 
-
-      <!-- Status -->
-
       <div class="form-group">
-
-        <label for="status">
-          Status
-        </label>
-
+        <label for="status">Status</label>
         <select
           id="status"
           [ngModel]="status()"
           (ngModelChange)="status.set($event)"
         >
-
-          <option value="new">
-            New
-          </option>
-
-          <option value="contacted">
-            Contacted
-          </option>
-
-          <option value="qualified">
-            Qualified
-          </option>
-
-          <option value="proposal">
-            Proposal
-          </option>
-
-          <option value="negotiation">
-            Negotiation
-          </option>
-
-          <option value="won">
-            Won
-          </option>
-
-          <option value="lost">
-            Lost
-          </option>
-
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="qualified">Qualified</option>
+          <option value="proposal">Proposal</option>
+          <option value="negotiation">Negotiation</option>
+          <option value="won">Won</option>
+          <option value="lost">Lost</option>
         </select>
-
       </div>
 
     </div>
 
 
-    <!-- Requirement -->
-
     <div class="form-group">
-
-      <label for="requirement">
-        Requirement
-      </label>
-
+      <label for="requirement">Requirement</label>
       <textarea
         id="requirement"
-        rows="6"
+        rows="5"
         [ngModel]="requirement()"
         (ngModelChange)="requirement.set($event)"
-        placeholder="Customer requirement..."
+        placeholder="Describe what the customer is looking for…"
       ></textarea>
-
     </div>
 
-
-    <!-- Actions -->
 
     <div class="form-actions">
 
@@ -223,13 +134,7 @@
         (click)="createLead()"
         [disabled]="saving()"
       >
-
-        @if (saving()) {
-          Creating...
-        } @else {
-          Create Lead
-        }
-
+        {{ saving() ? 'Creating…' : 'Create lead' }}
       </button>
 
     </div>
