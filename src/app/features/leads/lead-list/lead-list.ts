@@ -1,7 +1,5 @@
 import { Component, OnInit, computed, signal } from "@angular/core";
-
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
 
 import { CrmService } from "../../../core/services/crm";
@@ -10,46 +8,56 @@ import { Lead } from "../../../core/models/crm.models";
 @Component({
   selector: "app-lead-list",
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: "./lead-list.html",
   styleUrl: "./lead-list.scss",
 })
 export class LeadListComponent implements OnInit {
   readonly leads = signal<Lead[]>([]);
-  readonly search = signal("");
   readonly loading = signal(false);
   readonly error = signal("");
 
+  readonly searchTerm = signal("");
+  readonly statusFilter = signal("all");
+  readonly sourceFilter = signal("all");
+
   readonly filteredLeads = computed(() => {
-    const leads = this.leads();
-    const term = this.search().trim().toLowerCase();
+    const search = this.searchTerm().trim().toLowerCase();
+    const status = this.statusFilter();
+    const source = this.sourceFilter();
 
-    if (!term) {
-      return leads;
-    }
+    return this.leads().filter((lead) => {
+      const matchesSearch =
+        !search ||
+        [lead.name, lead.company, lead.email, lead.phone]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(search));
 
-    return leads.filter((lead) => {
-      const name = lead.name?.toLowerCase() ?? "";
-      const company = lead.company?.toLowerCase() ?? "";
-      const email = lead.email?.toLowerCase() ?? "";
-      const status = lead.status?.toLowerCase() ?? "";
-      const requirement = lead.requirement?.toLowerCase() ?? "";
+      const matchesStatus =
+        status === "all" || lead.status?.toLowerCase() === status;
 
-      return (
-        name.includes(term) ||
-        company.includes(term) ||
-        email.includes(term) ||
-        status.includes(term) ||
-        requirement.includes(term)
-      );
+      const matchesSource =
+        source === "all" || lead.source?.toLowerCase() === source;
+
+      return matchesSearch && matchesStatus && matchesSource;
     });
   });
 
-  constructor(private readonly crm: CrmService) {}
+  readonly resultCount = computed(() => this.filteredLeads().length);
+
+  readonly availableSources = computed(() => {
+    const sources = this.leads()
+      .map((lead) => lead.source?.trim())
+      .filter(Boolean) as string[];
+
+    return [...new Set(sources)].sort();
+  });
 
   ngOnInit(): void {
     this.loadLeads();
   }
+
+  constructor(private readonly crm: CrmService) {}
 
   loadLeads(): void {
     this.loading.set(true);
@@ -57,29 +65,70 @@ export class LeadListComponent implements OnInit {
 
     this.crm.getLeads().subscribe({
       next: (response) => {
-        console.log("Lead API response:", response);
-
         this.leads.set(response?.leads ?? []);
         this.loading.set(false);
       },
+      error: (error) => {
+        console.error("Load leads error:", error);
 
-      error: (error: unknown) => {
-        console.error("Lead API error:", error);
+        this.error.set(error?.error?.error || "Unable to load leads.");
 
         this.loading.set(false);
-        this.error.set(this.getErrorMessage(error));
       },
     });
   }
 
-  setSearch(value: string): void {
-    this.search.set(value);
+  onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchTerm.set(input.value);
   }
 
-  clearSearch(): void {
-    this.search.set("");
+  onStatusChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.statusFilter.set(select.value);
   }
 
+  onSourceChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.sourceFilter.set(select.value);
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set("");
+    this.statusFilter.set("all");
+    this.sourceFilter.set("all");
+  }
+
+  deleteLead(id: string | undefined): void {
+    if (!id) {
+      this.error.set("Lead ID is missing.");
+      return;
+    }
+
+    const lead = this.leads().find((item) => item._id === id);
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${lead?.name || "this lead"}?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.crm.deleteLead(id).subscribe({
+      next: () => {
+        this.leads.update((current) =>
+          current.filter((item) => item._id !== id),
+        );
+      },
+
+      error: (error) => {
+        console.error("Delete lead error:", error);
+
+        this.error.set(error?.error?.error || "Unable to delete lead.");
+      },
+    });
+  }
   formatStatus(status?: string): string {
     if (!status) {
       return "Unknown";
@@ -92,61 +141,17 @@ export class LeadListComponent implements OnInit {
       .replace(/\b\w/g, (char) => char.toUpperCase());
   }
 
-  getStatusClass(status: string): string {
-    const map: Record<string, string> = {
-      new: "status-new",
-      contacted: "status-contacted",
-      qualified: "status-qualified",
-      proposal: "status-proposal",
-      won: "status-won",
-      lost: "status-lost",
-    };
-    return map[status?.toLowerCase()] ?? "status-default";
-  }
-
-  trackByLeadId(index: number, lead: Lead): string | number {
-    return lead._id ?? index;
-  }
-
-  private getErrorMessage(error: unknown): string {
-    if (!error) {
-      return "Unable to load leads.";
+  getInitials(name?: string): string {
+    if (!name?.trim()) {
+      return "?";
     }
 
-    if (typeof error === "string") {
-      return error;
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
     }
 
-    if (typeof error === "object") {
-      const apiError = error as {
-        message?: string;
-        error?: {
-          message?: string;
-          error?: string;
-        };
-      };
-
-      if (
-        apiError.error &&
-        typeof apiError.error === "object" &&
-        apiError.error.message
-      ) {
-        return apiError.error.message;
-      }
-
-      if (
-        apiError.error &&
-        typeof apiError.error === "object" &&
-        apiError.error.error
-      ) {
-        return apiError.error.error;
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
-    }
-
-    return "Unable to load leads.";
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 }

@@ -1,1 +1,294 @@
-<p>ai-test works!</p>
+<div class="ai-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="eyebrow">
+        AI PLAYGROUND
+      </div>
+
+      <h2>AI Test</h2>
+
+      <p>
+        Test your local AI model and experiment
+        with sales-related prompts.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- Main grid -->
+  <div class="ai-grid">
+
+    <!-- Prompt Card -->
+    <section class="card prompt-card">
+
+      <div class="card-header">
+
+        <div class="card-icon">
+          ✦
+        </div>
+
+        <div>
+          <h3>Ask AI</h3>
+
+          <p>
+            Enter a prompt and get a response
+            from your connected AI model.
+          </p>
+        </div>
+
+      </div>
+
+
+      <label
+        for="ai-prompt"
+        class="field-label"
+      >
+        Your Prompt
+      </label>
+
+      <textarea
+        id="ai-prompt"
+        rows="7"
+        placeholder="Ask something about sales, leads, customers..."
+        [value]="prompt()"
+        (input)="onPromptInput($event)"
+      ></textarea>
+
+
+      <!-- Example prompts -->
+      <div class="examples">
+
+        <span class="examples-label">
+          Try an example
+        </span>
+
+        <div class="example-list">
+
+          @for (
+            example of examplePrompts;
+            track example
+          ) {
+
+            <button
+              type="button"
+              class="example-chip"
+              (click)="setPrompt(example)"
+            >
+              {{ example }}
+            </button>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- Error -->
+      @if (error()) {
+
+        <div class="error-message">
+          {{ error() }}
+        </div>
+
+      }
+
+
+      <!-- Actions -->
+      <div class="actions">
+
+        <button
+          type="button"
+          class="secondary-btn"
+          (click)="clear()"
+          [disabled]="loading()"
+        >
+          Clear
+        </button>
+
+        <button
+          type="button"
+          class="primary-btn"
+          (click)="askAi()"
+          [disabled]="loading()"
+        >
+
+          @if (loading()) {
+
+            <span class="spinner"></span>
+            Thinking...
+
+          } @else {
+
+            <span>✦</span>
+            Ask AI
+
+          }
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- Response Card -->
+    <section class="card response-card">
+
+      <div class="response-header">
+
+        <div>
+          <div class="response-title">
+            AI Response
+          </div>
+
+          @if (model()) {
+
+            <div class="model-info">
+              Model: {{ model() }}
+            </div>
+
+          }
+
+        </div>
+
+
+        <div
+          class="connection-status"
+          [class.loading]="loading()"
+        >
+          <span class="status-dot"></span>
+
+          @if (loading()) {
+            Processing
+          } @else {
+            Connected
+          }
+        </div>
+
+      </div>
+
+
+      @if (loading()) {
+
+        <div class="response-empty">
+
+          <div class="large-spinner"></div>
+
+          <h3>AI is thinking...</h3>
+
+          <p>
+            Your request is being processed.
+          </p>
+
+        </div>
+
+      } @else if (response()) {
+
+        <div class="response-content">
+          {{ response() }}
+        </div>
+
+      } @else {
+
+        <div class="response-empty">
+
+          <div class="empty-icon">
+            ✦
+          </div>
+
+          <h3>No response yet</h3>
+
+          <p>
+            Enter a prompt and click
+            <strong>Ask AI</strong> to test
+            your AI model.
+          </p>
+
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+
+
+  <!-- AI Capabilities -->
+  <section class="capabilities-card">
+
+    <div class="capabilities-header">
+
+      <div>
+        <h3>CRM AI Capabilities</h3>
+
+        <p>
+          AI features available in your sales CRM.
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="capabilities-grid">
+
+      <div class="capability">
+
+        <div class="capability-icon">
+          🎯
+        </div>
+
+        <div>
+          <strong>Lead Qualification</strong>
+
+          <p>
+            Analyze lead quality and purchase
+            intent.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="capability">
+
+        <div class="capability-icon">
+          ✉
+        </div>
+
+        <div>
+          <strong>Sales Messaging</strong>
+
+          <p>
+            Generate professional sales
+            follow-ups.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="capability">
+
+        <div class="capability-icon">
+          💡
+        </div>
+
+        <div>
+          <strong>Sales Suggestions</strong>
+
+          <p>
+            Generate next-step recommendations
+            for leads.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>

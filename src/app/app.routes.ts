@@ -6,6 +6,7 @@ import { LeadListComponent } from "./features/leads/lead-list/lead-list";
 import { LeadCreateComponent } from "./features/leads/lead-create/lead-create";
 import { LeadDetailComponent } from "./features/leads/lead-detail/lead-detail";
 import { LeadEditComponent } from "./features/leads/lead-edit/lead-edit";
+import { AiTestComponent } from "./features/ai/ai-test/ai-test";
 
 export const routes: Routes = [
   {
@@ -37,5 +38,9 @@ export const routes: Routes = [
   {
     path: "leads/:id",
     component: LeadDetailComponent,
+  },
+  {
+    path: "ai-test",
+    component: AiTestComponent,
   },
 ];

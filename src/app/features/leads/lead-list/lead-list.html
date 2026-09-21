@@ -1,49 +1,105 @@
 <div class="leads-page">
 
+  <!-- Header -->
   <div class="page-header">
-
     <div>
-      <h1>Leads</h1>
-      <p>Manage and track your sales pipeline.</p>
+      <h2>Leads</h2>
+      <p>Manage and track your sales leads.</p>
     </div>
 
-    <a routerLink="/leads/new" class="primary-btn">
-      <span class="btn-icon">+</span>
-      New lead
+    <a
+      routerLink="/leads/new"
+      class="primary-btn"
+    >
+      + New Lead
     </a>
-
   </div>
 
 
+  <!-- Toolbar -->
   <div class="toolbar">
 
     <div class="search-box">
-
       <span class="search-icon">⌕</span>
 
       <input
         type="text"
-        placeholder="Search by name, company, email…"
-        [ngModel]="search()"
-        (ngModelChange)="setSearch($event)"
+        placeholder="Search name, company, email or phone..."
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
       />
-
-      @if (search()) {
-        <button
-          type="button"
-          class="clear-search"
-          (click)="clearSearch()"
-          aria-label="Clear search"
-        >
-          ×
-        </button>
-      }
-
     </div>
+
+
+    <select
+      class="filter-select"
+      [value]="statusFilter()"
+      (change)="onStatusChange($event)"
+    >
+      <option value="all">All Statuses</option>
+      <option value="new">New</option>
+      <option value="contacted">Contacted</option>
+      <option value="qualified">Qualified</option>
+      <option value="proposal">Proposal</option>
+      <option value="negotiation">Negotiation</option>
+      <option value="won">Won</option>
+      <option value="lost">Lost</option>
+    </select>
+
+
+    <select
+      class="filter-select"
+      [value]="sourceFilter()"
+      (change)="onSourceChange($event)"
+    >
+      <option value="all">All Sources</option>
+
+      @for (source of availableSources(); track source) {
+        <option
+          [value]="source.toLowerCase()"
+        >
+          {{ formatStatus(source) }}
+        </option>
+      }
+    </select>
+
+
+    <button
+      type="button"
+      class="clear-btn"
+      (click)="clearFilters()"
+      [disabled]="
+        !searchTerm() &&
+        statusFilter() === 'all' &&
+        sourceFilter() === 'all'
+      "
+    >
+      Clear
+    </button>
 
   </div>
 
 
+  <!-- Result count -->
+  <div class="results-info">
+    <span>
+      {{ resultCount() }}
+      {{ resultCount() === 1 ? "lead" : "leads" }}
+    </span>
+
+    @if (
+      searchTerm() ||
+      statusFilter() !== "all" ||
+      sourceFilter() !== "all"
+    ) {
+      <span class="filtered-label">
+        Filtered results
+      </span>
+    }
+  </div>
+
+
+  <!-- Error -->
   @if (error()) {
     <div class="error-message">
       {{ error() }}
@@ -51,131 +107,196 @@
   }
 
 
+  <!-- Loading -->
   @if (loading()) {
-    <div class="state-card">
-      <div class="spinner"></div>
-      <p>Loading leads…</p>
+
+    <div class="empty-state">
+      Loading leads...
     </div>
-  }
 
+  } @else if (filteredLeads().length === 0) {
 
-  @if (!loading() && !error()) {
+    <div class="empty-state">
 
-    @if (filteredLeads().length === 0) {
-
-      <div class="state-card empty-state">
-
-        <div class="empty-icon">👥</div>
-
-        @if (search()) {
-
-          <h3>No leads found</h3>
-          <p>Try a different search term.</p>
-
-          <button
-            type="button"
-            class="secondary-btn"
-            (click)="clearSearch()"
-          >
-            Clear search
-          </button>
-
-        } @else {
-
-          <h3>No leads yet</h3>
-          <p>Create your first lead to get started.</p>
-
-          <a routerLink="/leads/new" class="primary-btn">
-            Create lead
-          </a>
-
-        }
-
+      <div class="empty-icon">
+        ◌
       </div>
 
-    } @else {
+      <h3>No leads found</h3>
 
-      <div class="leads-card">
+      <p>
+        Try changing your search or filters.
+      </p>
 
-        <div class="table-header">
-          <span>
-            <strong>{{ filteredLeads().length }}</strong>
-            {{ filteredLeads().length === 1 ? 'lead' : 'leads' }}
-          </span>
-        </div>
+      <button
+        type="button"
+        class="secondary-btn"
+        (click)="clearFilters()"
+      >
+        Clear Filters
+      </button>
 
-        <div class="table-wrapper">
+    </div>
 
-          <table>
+  } @else {
 
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Company</th>
-                <th>Email</th>
-                <th>Budget</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th></th>
-              </tr>
-            </thead>
+    <!-- Leads table -->
+    <div class="table-card">
 
-            <tbody>
+      <table>
 
-              @for (lead of filteredLeads(); track lead._id) {
+        <thead>
+          <tr>
+            <th>Lead</th>
+            <th>Company</th>
+            <th>Contact</th>
+            <th>Budget</th>
+            <th>Status</th>
+            <th>Source</th>
+            <th></th>
+          </tr>
+        </thead>
 
-                <tr>
+        <tbody>
 
-                  <td>
-                    <a [routerLink]="['/leads', lead._id]" class="lead-name">
-                      {{ lead.name || 'Unnamed lead' }}
-                    </a>
-                  </td>
+          @for (
+            lead of filteredLeads();
+            track lead._id
+          ) {
 
-                  <td class="cell-muted">
-                    {{ lead.company || '—' }}
-                  </td>
+            <tr>
 
-                  <td class="cell-muted">
-                    {{ lead.email || '—' }}
-                  </td>
+              <!-- Lead -->
+              <td>
+                <a
+                  class="lead-name"
+                  [routerLink]="['/leads', lead._id]"
+                >
 
-                  <td class="cell-budget">
-                    {{ (lead.budget !== undefined && lead.budget !== null) ? (lead.budget | number) : '—' }}
-                  </td>
+                  <span class="avatar">
+                    {{ getInitials(lead.name) }}
+                  </span>
 
-                  <td>
-                    <span
-                      class="status-badge"
-                      [class]="getStatusClass(lead.status)"
-                    >
-                      {{ formatStatus(lead.status) }}
+                  <span>
+                    <strong>
+                      {{ lead.name || "Unnamed Lead" }}
+                    </strong>
+
+                    <small>
+                      {{ lead.email || "No email" }}
+                    </small>
+                  </span>
+
+                </a>
+              </td>
+
+
+              <!-- Company -->
+              <td>
+                <span class="company-name">
+                  {{ lead.company || "—" }}
+                </span>
+              </td>
+
+
+              <!-- Contact -->
+              <td>
+                <div class="contact-info">
+
+                  @if (lead.email) {
+                    <span>
+                      {{ lead.email }}
                     </span>
-                  </td>
+                  }
 
-                  <td class="cell-date">
-                    {{ lead.createdAt ? (lead.createdAt | date:'MMM d, y') : '—' }}
-                  </td>
+                  @if (lead.phone) {
+                    <small>
+                      {{ lead.phone }}
+                    </small>
+                  }
 
-                  <td>
-                    <a [routerLink]="['/leads', lead._id]" class="view-btn">
-                      View →
-                    </a>
-                  </td>
+                  @if (!lead.email && !lead.phone) {
+                    <span>—</span>
+                  }
 
-                </tr>
+                </div>
+              </td>
 
-              }
 
-            </tbody>
+              <!-- Budget -->
+              <td>
+                @if (lead.budget !== undefined && lead.budget !== null) {
+                  ${{ lead.budget | number }}
+                } @else {
+                  —
+                }
+              </td>
 
-          </table>
 
-        </div>
+              <!-- Status -->
+              <td>
+                <span
+                  class="status-badge"
+                  [class]="'status-' + (lead.status || 'new').toLowerCase()"
+                >
+                  {{ formatStatus(lead.status) }}
+                </span>
+              </td>
 
-      </div>
 
-    }
+              <!-- Source -->
+              <td>
+                <span class="source-text">
+                  {{ formatStatus(lead.source) }}
+                </span>
+              </td>
+
+
+              <!-- Actions -->
+              <td>
+                <div class="actions">
+
+                  <a
+                    class="action-btn"
+                    [routerLink]="['/leads', lead._id]"
+                    title="View lead"
+                  >
+                    View
+                  </a>
+
+                  <a
+                    class="action-btn"
+                    [routerLink]="[
+                      '/leads',
+                      lead._id,
+                      'edit'
+                    ]"
+                    title="Edit lead"
+                  >
+                    Edit
+                  </a>
+
+                  <button
+                    type="button"
+                    class="action-btn danger"
+                    (click)="deleteLead(lead._id)"
+                    title="Delete lead"
+                  >
+                    Delete
+                  </button>
+
+                </div>
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
 
   }
 
