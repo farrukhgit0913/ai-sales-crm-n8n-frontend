@@ -1,142 +1,238 @@
-<div class="page">
+<div class="lead-create-page">
 
-  <div class="heading">
+  <div class="page-header">
 
     <div>
+      <a
+        routerLink="/leads"
+        class="back-link"
+      >
+        ← Back to Leads
+      </a>
+
       <h1>Create Lead</h1>
-      <p>Add a new prospect to your CRM.</p>
+
+      <p>
+        Add a new sales lead to your CRM.
+      </p>
     </div>
 
   </div>
 
-  <div class="form-panel">
-
-    <div
-      class="error"
-      *ngIf="error"
-    >
-      {{ error }}
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
     </div>
+  }
 
-    <form
-      #form="ngForm"
-      (ngSubmit)="submit()"
-    >
+  @if (success()) {
+    <div class="success-message">
+      {{ success() }}
+    </div>
+  }
 
-      <div class="form-grid">
+  <div class="form-card">
 
-        <div class="field">
+    <div class="form-grid">
 
-          <label>Full Name *</label>
+      <!-- Name -->
 
-          <input
-            name="name"
-            [(ngModel)]="lead.name"
-            required
-            placeholder="Ahmed Khan"
-          />
+      <div class="form-group">
 
-        </div>
-
-        <div class="field">
-
-          <label>Company</label>
-
-          <input
-            name="company"
-            [(ngModel)]="lead.company"
-            placeholder="Toyota"
-          />
-
-        </div>
-
-        <div class="field">
-
-          <label>Email *</label>
-
-          <input
-            type="email"
-            name="email"
-            [(ngModel)]="lead.email"
-            required
-            placeholder="ahmed@example.com"
-          />
-
-        </div>
-
-        <div class="field">
-
-          <label>Phone</label>
-
-          <input
-            name="phone"
-            [(ngModel)]="lead.phone"
-            placeholder="+92..."
-          />
-
-        </div>
-
-        <div class="field">
-
-          <label>Budget</label>
-
-          <input
-            type="number"
-            name="budget"
-            [(ngModel)]="lead.budget"
-            placeholder="25000"
-          />
-
-        </div>
-
-      </div>
-
-      <div class="field">
-
-        <label>Requirement</label>
+        <label for="name">
+          Name *
+        </label>
 
         <input
-          name="requirement"
-          [(ngModel)]="lead.requirement"
-          placeholder="Looking for a Toyota SUV..."
+          id="name"
+          type="text"
+          [ngModel]="name()"
+          (ngModelChange)="name.set($event)"
+          placeholder="Lead name"
         />
 
       </div>
 
-      <div class="field">
 
-        <label>Message</label>
+      <!-- Company -->
 
-        <textarea
-          name="message"
-          [(ngModel)]="lead.message"
-          rows="5"
-          placeholder="Additional information..."
-        ></textarea>
+      <div class="form-group">
 
-      </div>
+        <label for="company">
+          Company
+        </label>
 
-      <div class="actions">
-
-        <button
-          type="button"
-          class="secondary"
-          (click)="cancel()"
-        >
-          Cancel
-        </button>
-
-        <button
-          type="submit"
-          class="primary"
-          [disabled]="form.invalid || saving"
-        >
-          {{ saving ? 'Creating...' : 'Create Lead' }}
-        </button>
+        <input
+          id="company"
+          type="text"
+          [ngModel]="company()"
+          (ngModelChange)="company.set($event)"
+          placeholder="Company name"
+        />
 
       </div>
 
-    </form>
+
+      <!-- Email -->
+
+      <div class="form-group">
+
+        <label for="email">
+          Email *
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          placeholder="Email address"
+        />
+
+      </div>
+
+
+      <!-- Phone -->
+
+      <div class="form-group">
+
+        <label for="phone">
+          Phone
+        </label>
+
+        <input
+          id="phone"
+          type="text"
+          [ngModel]="phone()"
+          (ngModelChange)="phone.set($event)"
+          placeholder="Phone number"
+        />
+
+      </div>
+
+
+      <!-- Budget -->
+
+      <div class="form-group">
+
+        <label for="budget">
+          Budget
+        </label>
+
+        <input
+          id="budget"
+          type="number"
+          [ngModel]="budget()"
+          (ngModelChange)="
+            budget.set(
+              $event === ''
+                ? null
+                : +$event
+            )
+          "
+          placeholder="Budget"
+        />
+
+      </div>
+
+
+      <!-- Status -->
+
+      <div class="form-group">
+
+        <label for="status">
+          Status
+        </label>
+
+        <select
+          id="status"
+          [ngModel]="status()"
+          (ngModelChange)="status.set($event)"
+        >
+
+          <option value="new">
+            New
+          </option>
+
+          <option value="contacted">
+            Contacted
+          </option>
+
+          <option value="qualified">
+            Qualified
+          </option>
+
+          <option value="proposal">
+            Proposal
+          </option>
+
+          <option value="negotiation">
+            Negotiation
+          </option>
+
+          <option value="won">
+            Won
+          </option>
+
+          <option value="lost">
+            Lost
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- Requirement -->
+
+    <div class="form-group">
+
+      <label for="requirement">
+        Requirement
+      </label>
+
+      <textarea
+        id="requirement"
+        rows="6"
+        [ngModel]="requirement()"
+        (ngModelChange)="requirement.set($event)"
+        placeholder="Customer requirement..."
+      ></textarea>
+
+    </div>
+
+
+    <!-- Actions -->
+
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="secondary-btn"
+        (click)="cancel()"
+        [disabled]="saving()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="primary-btn"
+        (click)="createLead()"
+        [disabled]="saving()"
+      >
+
+        @if (saving()) {
+          Creating...
+        } @else {
+          Create Lead
+        }
+
+      </button>
+
+    </div>
 
   </div>
 

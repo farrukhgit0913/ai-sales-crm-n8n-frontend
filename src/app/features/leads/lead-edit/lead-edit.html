@@ -1,0 +1,240 @@
+<div class="lead-edit-page">
+
+  <div class="page-header">
+
+    <div>
+
+      <a
+        routerLink="/leads"
+        class="back-link"
+      >
+        ← Back to Leads
+      </a>
+
+      <h1>Edit Lead</h1>
+
+      <p>
+        Update the lead information below.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  @if (loading()) {
+
+    <div class="state-card">
+
+      <div class="spinner"></div>
+
+      <p>
+        Loading lead...
+      </p>
+
+    </div>
+
+  }
+
+
+  @if (!loading()) {
+
+    <div class="form-card">
+
+      @if (error()) {
+        <div class="error-message">
+          {{ error() }}
+        </div>
+      }
+
+      @if (success()) {
+        <div class="success-message">
+          {{ success() }}
+        </div>
+      }
+
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label>
+            Name *
+          </label>
+
+          <input
+            type="text"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            placeholder="Lead name"
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Company
+          </label>
+
+          <input
+            type="text"
+            [ngModel]="company()"
+            (ngModelChange)="company.set($event)"
+            placeholder="Company name"
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Email *
+          </label>
+
+          <input
+            type="email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            placeholder="Email address"
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Phone
+          </label>
+
+          <input
+            type="text"
+            [ngModel]="phone()"
+            (ngModelChange)="phone.set($event)"
+            placeholder="Phone number"
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Budget
+          </label>
+
+          <input
+            type="number"
+            [ngModel]="budget()"
+            (ngModelChange)="
+              budget.set(
+                $event === ''
+                  ? null
+                  : +$event
+              )
+            "
+            placeholder="Budget"
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Status
+          </label>
+
+          <select
+            [ngModel]="status()"
+            (ngModelChange)="status.set($event)"
+          >
+
+            <option value="new">
+              New
+            </option>
+
+            <option value="contacted">
+              Contacted
+            </option>
+
+            <option value="qualified">
+              Qualified
+            </option>
+
+            <option value="proposal">
+              Proposal
+            </option>
+
+            <option value="negotiation">
+              Negotiation
+            </option>
+
+            <option value="won">
+              Won
+            </option>
+
+            <option value="lost">
+              Lost
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Requirement
+        </label>
+
+        <textarea
+          rows="6"
+          [ngModel]="requirement()"
+          (ngModelChange)="requirement.set($event)"
+          placeholder="Customer requirement..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="secondary-btn"
+          (click)="cancel()"
+          [disabled]="saving()"
+        >
+          Cancel
+        </button>
+
+
+        <button
+          type="button"
+          class="primary-btn"
+          (click)="updateLead()"
+          [disabled]="saving()"
+        >
+
+          @if (saving()) {
+            Saving...
+          } @else {
+            Update Lead
+          }
+
+        </button>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

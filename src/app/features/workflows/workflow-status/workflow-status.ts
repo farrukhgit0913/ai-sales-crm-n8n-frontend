@@ -1,7 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  signal
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { CrmService } from '../../../core/services/crm';
-import { SystemStatus } from '../../../core/models/crm.models';
+
+interface SystemStatusResponse {
+  status?: string;
+  message?: string;
+  workflows?: unknown[];
+  [key: string]: unknown;
+}
 
 @Component({
   selector: 'app-workflow-status',
@@ -14,63 +26,59 @@ import { SystemStatus } from '../../../core/models/crm.models';
 })
 export class WorkflowStatusComponent implements OnInit {
 
-  status: SystemStatus | null = null;
+  readonly loading = signal(false);
 
-  loading = true;
+  readonly error = signal('');
 
-  error = '';
+  readonly status = signal<SystemStatusResponse | null>(null);
+
 
   constructor(
-    private crm: CrmService
+    private readonly crm: CrmService
   ) {}
+
 
   ngOnInit(): void {
     this.loadStatus();
   }
 
+
   loadStatus(): void {
 
-    this.loading = true;
+    this.loading.set(true);
 
-    this.crm.getSystemStatus()
-      .subscribe({
+    this.error.set('');
 
-        next: response => {
+    this.crm.getSystemStatus().subscribe({
 
-          this.status = response;
-          this.loading = false;
+      next: (response: SystemStatusResponse) => {
 
-        },
+        console.log(
+          'System status response:',
+          response
+        );
 
-        error: () => {
+        this.status.set(response);
 
-          this.error =
-            'Unable to load service status.';
+        this.loading.set(false);
+      },
 
-          this.loading = false;
 
-        }
+      error: (error: unknown) => {
 
-      });
-  }
+        console.error(
+          'System status error:',
+          error
+        );
 
-  isOnline(
-    service: string
-  ): boolean {
+        this.loading.set(false);
 
-    return this.status
-      ?.services?.[service]
-      ?.status === 'online';
-  }
+        this.error.set(
+          'Unable to load system status.'
+        );
+      }
 
-  serviceName(
-    service: string
-  ): string {
-
-    return this.status
-      ?.services?.[service]
-      ?.name || service;
-
+    });
   }
 
 }

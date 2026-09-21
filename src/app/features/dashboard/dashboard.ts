@@ -58,7 +58,7 @@ export class DashboardComponent
     this.crm.getLeads()
       .subscribe({
 
-        next: response => {
+        next: (response: any) => {
 
           this.leads =
             response.leads;
@@ -77,7 +77,7 @@ export class DashboardComponent
     this.crm.getSystemStatus()
       .subscribe({
 
-        next: response => {
+        next: (response: any) => {
 
           this.status =
             response;

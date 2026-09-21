@@ -1,57 +1,107 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 
-import { ApiService } from './api';
+import { Lead } from "../models/crm.models";
 
-import {
-  Lead,
-  LeadsResponse,
-  LeadResponse,
-  SystemStatus,
-  AiTestResponse,
-  HealthResponse
-} from '../models/crm.models';
+export interface EmailTestResponse {
+  success: boolean;
+  message?: string;
+  [key: string]: unknown;
+}
+
+export interface SystemStatusResponse {
+  [key: string]: unknown;
+}
+
+export interface AiTestResponse {
+  success: boolean;
+  model: string;
+  response: string;
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class CrmService {
-  constructor(private api: ApiService) {}
+  private readonly apiUrl = "http://localhost:3000/api";
 
-  getHealth() {
-    return this.api.get<HealthResponse>('/health');
-  }
+  constructor(private readonly http: HttpClient) {}
+
+  // =========================
+  // SYSTEM
+  // =========================
 
   getSystemStatus() {
-    return this.api.get<SystemStatus>('/status');
+    return this.http.get<SystemStatusResponse>(
+      `${this.apiUrl}/system/status`
+    );
   }
 
-  getLeads() {
-    return this.api.get<LeadsResponse>('/leads');
-  }
-
-  createLead(lead: Lead) {
-    return this.api.post<LeadResponse>('/leads', lead);
-  }
+  // =========================
+  // AI
+  // =========================
 
   testAi(prompt: string) {
-    return this.api.post<AiTestResponse>('/ai/test', {
-      prompt
-    });
+    return this.http.post<AiTestResponse>(
+      `${this.apiUrl}/ai/test`,
+      {
+        prompt,
+      }
+    );
   }
 
-  sendLeadToN8n(lead: Lead) {
-    return this.api.post<unknown>('/n8n/lead', lead);
-  }
+  // =========================
+  // EMAIL
+  // =========================
 
-  testEmail(data: {
+  testEmail(payload: {
     to: string;
     subject: string;
     text: string;
   }) {
-    return this.api.post<{
-      success: boolean;
-      message?: string;
-      error?: string;
-    }>('/email/test', data);
+    return this.http.post<EmailTestResponse>(
+      `${this.apiUrl}/email/test`,
+      payload
+    );
+  }
+
+  // =========================
+  // LEADS
+  // =========================
+
+  getLeads() {
+    return this.http.get<{
+      leads: Lead[];
+    }>(`${this.apiUrl}/leads`);
+  }
+
+  getLead(id: string) {
+    return this.http.get<{
+      lead: Lead;
+    }>(`${this.apiUrl}/leads/${id}`);
+  }
+
+  createLead(payload: Partial<Lead>) {
+    return this.http.post<{
+      lead: Lead;
+    }>(`${this.apiUrl}/leads`, payload);
+  }
+
+  updateLead(
+    id: string,
+    payload: Partial<Lead>
+  ) {
+    return this.http.put<{
+      lead: Lead;
+    }>(
+      `${this.apiUrl}/leads/${id}`,
+      payload
+    );
+  }
+
+  deleteLead(id: string) {
+    return this.http.delete(
+      `${this.apiUrl}/leads/${id}`
+    );
   }
 }

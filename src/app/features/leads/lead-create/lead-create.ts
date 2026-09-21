@@ -1,7 +1,12 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  signal
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+
 import { CrmService } from '../../../core/services/crm';
 import { Lead } from '../../../core/models/crm.models';
 
@@ -10,66 +15,135 @@ import { Lead } from '../../../core/models/crm.models';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './lead-create.html',
   styleUrl: './lead-create.scss'
 })
 export class LeadCreateComponent {
-  lead: Lead = {
-    name: '',
-    company: '',
-    email: '',
-    phone: '',
-    budget: 0,
-    requirement: '',
-    message: '',
-    status: 'new',
-    source: 'website'
-  };
 
-  saving = false;
-  error = '';
+  readonly saving = signal(false);
+  readonly error = signal('');
+  readonly success = signal('');
+
+  readonly name = signal('');
+  readonly company = signal('');
+  readonly email = signal('');
+  readonly phone = signal('');
+  readonly budget = signal<number | null>(null);
+  readonly status = signal('new');
+  readonly requirement = signal('');
 
   constructor(
-    private crm: CrmService,
-    private router: Router
+    private readonly crm: CrmService,
+    private readonly router: Router
   ) {}
 
-  submit(): void {
-    this.error = '';
+  createLead(): void {
+    this.error.set('');
+    this.success.set('');
 
-    if (!this.lead.name.trim() || !this.lead.email.trim()) {
-      this.error = 'Name and email are required.';
+    if (!this.name().trim()) {
+      this.error.set('Lead name is required.');
       return;
     }
 
-    this.saving = true;
+    if (!this.email().trim()) {
+      this.error.set('Email is required.');
+      return;
+    }
 
-    this.crm.createLead(this.lead).subscribe({
+    const payload: Partial<Lead> = {
+      name: this.name().trim(),
+      company: this.company().trim(),
+      email: this.email().trim(),
+      phone: this.phone().trim(),
+      budget: this.budget() ?? undefined,
+      status: this.status(),
+      requirement: this.requirement().trim()
+    };
+
+    this.saving.set(true);
+
+    console.log('Creating lead:', payload);
+
+    this.crm.createLead(payload).subscribe({
       next: (response) => {
-        this.saving = false;
+        console.log('Lead created:', response);
 
-        if (response.success && response.lead?._id) {
-          this.router.navigate(['/leads', response.lead._id]);
-        } else {
-          this.error = 'Lead was created but no lead ID was returned.';
+        this.saving.set(false);
+        this.success.set('Lead created successfully.');
+
+        const leadId = response?.lead?._id;
+
+        if (leadId) {
+          setTimeout(() => {
+            this.router.navigate([
+              '/leads',
+              leadId
+            ]);
+          }, 500);
         }
       },
-      error: (error: unknown) => {
-        this.saving = false;
 
+      error: (error: unknown) => {
         console.error('Create lead error:', error);
 
-        this.error =
-          error instanceof Error
-            ? error.message
-            : 'Unable to create lead.';
+        this.saving.set(false);
+        this.error.set(
+          this.getErrorMessage(error)
+        );
       }
     });
   }
 
   cancel(): void {
     this.router.navigate(['/leads']);
+  }
+
+  private getErrorMessage(
+    error: unknown
+  ): string {
+
+    if (!error) {
+      return 'Unable to create lead.';
+    }
+
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (typeof error === 'object') {
+      const apiError = error as {
+        message?: string;
+        error?: {
+          message?: string;
+          error?: string;
+        };
+      };
+
+      if (
+        apiError.error &&
+        typeof apiError.error === 'object' &&
+        apiError.error.message
+      ) {
+        return apiError.error.message;
+      }
+
+      if (
+        apiError.error &&
+        typeof apiError.error === 'object' &&
+        apiError.error.error
+      ) {
+        return apiError.error.error;
+      }
+
+      if (apiError.message) {
+        return apiError.message;
+      }
+    }
+
+    return 'Unable to create lead.';
   }
 }

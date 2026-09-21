@@ -1,41 +1,437 @@
-<div class="page">
+<div class="lead-detail-page">
 
-  <a routerLink="/leads">← Back to Leads</a>
+  <!-- =========================
+       Loading
+  ========================== -->
 
-  <div *ngIf="loading">
-    Loading lead...
-  </div>
+  @if (loading()) {
 
-  <div *ngIf="error" class="error">
-    {{ error }}
-  </div>
+    <div class="state-card">
 
-  <div *ngIf="lead" class="panel">
+      <div class="spinner"></div>
 
-    <h1>{{ lead.name }}</h1>
+      <p>Loading lead...</p>
 
-    <p>{{ lead.company || 'No company' }}</p>
+    </div>
 
-    <hr>
+  }
 
-    <p><strong>Email:</strong> {{ lead.email }}</p>
 
-    <p><strong>Phone:</strong> {{ lead.phone || '—' }}</p>
+  <!-- =========================
+       Error
+  ========================== -->
 
-    <p><strong>Budget:</strong> {{ lead.budget || '—' }}</p>
+  @if (!loading() && error()) {
 
-    <p><strong>Status:</strong> {{ lead.status }}</p>
+    <div class="state-card error-card">
 
-    <p>
-      <strong>Requirement:</strong>
-      {{ lead.requirement || '—' }}
-    </p>
+      <h3>Unable to load lead</h3>
 
-    <p>
-      <strong>Message:</strong>
-      {{ lead.message || '—' }}
-    </p>
+      <p>
+        {{ error() }}
+      </p>
 
-  </div>
+      <div class="state-actions">
+
+        <button
+          type="button"
+          class="secondary-btn"
+          (click)="loadLead()"
+        >
+          Try Again
+        </button>
+
+        <a
+          routerLink="/leads"
+          class="primary-btn"
+        >
+          Back to Leads
+        </a>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- =========================
+       Lead
+  ========================== -->
+
+  @if (!loading() && !error() && lead()) {
+
+    <div class="page-header">
+
+      <div>
+
+        <a
+          routerLink="/leads"
+          class="back-link"
+        >
+          ← Back to Leads
+        </a>
+
+        <h2>
+          {{ lead()?.name || 'Unnamed Lead' }}
+        </h2>
+
+        <p>
+          Lead details and information.
+        </p>
+
+      </div>
+
+
+      <div class="header-actions">
+
+        @if (lead()?._id) {
+
+          <a
+            [routerLink]="[
+              '/leads',
+              lead()?._id,
+              'edit'
+            ]"
+            class="secondary-btn"
+          >
+            Edit Lead
+          </a>
+
+        }
+
+        <button
+          type="button"
+          class="danger-btn"
+          [disabled]="deleting()"
+          (click)="deleteLead()"
+        >
+          @if (deleting()) {
+            Deleting...
+          } @else {
+            Delete
+          }
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- Delete Error -->
+
+    @if (deleteError()) {
+
+      <div class="delete-error">
+        {{ deleteError() }}
+      </div>
+
+    }
+
+
+    <div class="details-grid">
+
+      <!-- =========================
+           Main Information
+      ========================== -->
+
+      <div class="details-card">
+
+        <div class="card-header">
+
+          <div>
+            <h3>Lead Information</h3>
+            <p>Basic information about this lead.</p>
+          </div>
+
+          <span
+            class="status-badge"
+            [ngClass]="getStatusClass(lead()?.status)"
+          >
+            {{ formatStatus(lead()?.status) }}
+          </span>
+
+        </div>
+
+
+        <div class="info-grid">
+
+          <!-- Name -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Name
+            </span>
+
+            <span class="info-value">
+              {{ lead()?.name || '—' }}
+            </span>
+
+          </div>
+
+
+          <!-- Company -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Company
+            </span>
+
+            <span class="info-value">
+              {{ lead()?.company || '—' }}
+            </span>
+
+          </div>
+
+
+          <!-- Email -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Email
+            </span>
+
+            @if (lead()?.email) {
+
+              <a
+                [href]="'mailto:' + lead()?.email"
+                class="info-link"
+              >
+                {{ lead()?.email }}
+              </a>
+
+            } @else {
+
+              <span class="info-value">
+                —
+              </span>
+
+            }
+
+          </div>
+
+
+          <!-- Phone -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Phone
+            </span>
+
+            @if (lead()?.phone) {
+
+              <a
+                [href]="'tel:' + lead()?.phone"
+                class="info-link"
+              >
+                {{ lead()?.phone }}
+              </a>
+
+            } @else {
+
+              <span class="info-value">
+                —
+              </span>
+
+            }
+
+          </div>
+
+
+          <!-- Budget -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Budget
+            </span>
+
+            @if (
+              lead()?.budget !== null &&
+              lead()?.budget !== undefined
+            ) {
+
+              <span class="info-value budget">
+                ${{ lead()?.budget | number }}
+              </span>
+
+            } @else {
+
+              <span class="info-value">
+                —
+              </span>
+
+            }
+
+          </div>
+
+
+          <!-- Status -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Status
+            </span>
+
+            <span class="info-value">
+              {{ formatStatus(lead()?.status) }}
+            </span>
+
+          </div>
+
+
+          <!-- Created -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Created
+            </span>
+
+            <span class="info-value">
+
+              @if (lead()?.createdAt) {
+
+                {{ lead()?.createdAt | date:'MMM d, yyyy h:mm a' }}
+
+              } @else {
+
+                —
+
+              }
+
+            </span>
+
+          </div>
+
+
+          <!-- Updated -->
+
+          <div class="info-item">
+
+            <span class="info-label">
+              Updated
+            </span>
+
+            <span class="info-value">
+
+              @if (lead()?.updatedAt) {
+
+                {{ lead()?.updatedAt | date:'MMM d, yyyy h:mm a' }}
+
+              } @else {
+
+                —
+
+              }
+
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           Requirement
+      ========================== -->
+
+      <div class="details-card">
+
+        <div class="card-header">
+
+          <div>
+            <h3>Requirement</h3>
+            <p>What the lead is looking for.</p>
+          </div>
+
+        </div>
+
+
+        <div class="requirement-content">
+
+          @if (lead()?.requirement) {
+
+            {{ lead()?.requirement }}
+
+          } @else {
+
+            <span class="muted">
+              No requirement provided.
+            </span>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           Contact
+      ========================== -->
+
+      <div class="details-card">
+
+        <div class="card-header">
+
+          <div>
+            <h3>Contact</h3>
+            <p>Contact information for this lead.</p>
+          </div>
+        </div>
+
+
+        <div class="contact-actions">
+
+          @if (lead()?.email) {
+
+            <a
+              [href]="'mailto:' + lead()?.email"
+              class="contact-btn"
+            >
+              ✉ Email
+            </a>
+
+          }
+
+
+          @if (lead()?.phone) {
+
+            <a
+              [href]="'tel:' + lead()?.phone"
+              class="contact-btn"
+            >
+              ☎ Call
+            </a>
+
+          }
+
+
+          @if (
+            !lead()?.email &&
+            !lead()?.phone
+          ) {
+
+            <span class="muted">
+              No contact information available.
+            </span>
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
 
 </div>

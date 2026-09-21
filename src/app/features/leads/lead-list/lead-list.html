@@ -1,356 +1,182 @@
 <div class="leads-page">
 
-  <!-- =========================
-       Header
-  ========================== -->
-
   <div class="page-header">
 
-<div>
-  <h2>Leads</h2>
-  <p>Manage and track your sales leads.</p>
-</div>
+    <div>
+      <h1>Leads</h1>
+      <p>Manage and track your sales pipeline.</p>
+    </div>
 
-<a
-  routerLink="/leads/new"
-  class="primary-btn"
->
-  + New Lead
-</a>
+    <a routerLink="/leads/new" class="primary-btn">
+      <span class="btn-icon">+</span>
+      New lead
+    </a>
 
   </div>
 
-  <!-- =========================
-       Toolbar
-  ========================== -->
 
   <div class="toolbar">
 
-<div class="search-box">
+    <div class="search-box">
 
-  <input
-    type="text"
-    [ngModel]="search()"
-    (ngModelChange)="setSearch($event)"
-    placeholder="Search leads..."
-    aria-label="Search leads"
-  />
+      <span class="search-icon">⌕</span>
 
-  @if (search()) {
+      <input
+        type="text"
+        placeholder="Search by name, company, email…"
+        [ngModel]="search()"
+        (ngModelChange)="setSearch($event)"
+      />
 
-    <button
-      type="button"
-      class="clear-search"
-      (click)="clearSearch()"
-      aria-label="Clear search"
-    >
-      ×
-    </button>
+      @if (search()) {
+        <button
+          type="button"
+          class="clear-search"
+          (click)="clearSearch()"
+          aria-label="Clear search"
+        >
+          ×
+        </button>
+      }
 
-  }
-
-</div>
-
-
-<div class="lead-count">
-
-  {{ filteredLeads().length }}
-  {{ filteredLeads().length === 1 ? 'lead' : 'leads' }}
-
-</div>
+    </div>
 
   </div>
 
-  <!-- =========================
-       Loading
-  ========================== -->
 
-@if (loading()) {
-
-<div class="state-card">
-
-  <div class="spinner"></div>
-
-  <p>Loading leads...</p>
-
-</div>
-
-}
-
-  <!-- =========================
-       Error
-  ========================== -->
-
-@if (!loading() && error()) {
-
-<div class="state-card error-card">
-
-  <h3>Unable to load leads</h3>
-
-  <p>
-    {{ error() }}
-  </p>
-
-  <button
-    type="button"
-    class="secondary-btn"
-    (click)="loadLeads()"
-  >
-    Try Again
-  </button>
-
-</div>
-
-}
-
-  <!-- =========================
-       Empty / Search Results
-  ========================== -->
-
-@if (
-!loading() &&
-!error() &&
-filteredLeads().length === 0
-) {
-
-<div class="state-card">
-
-  @if (search()) {
-
-    <h3>No leads found</h3>
-
-    <p>
-      No leads match "{{ search() }}".
-    </p>
-
-    <div class="empty-actions">
-
-      <button
-        type="button"
-        class="secondary-btn"
-        (click)="clearSearch()"
-      >
-        Clear Search
-      </button>
-
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
     </div>
-
-  } @else {
-
-    <h3>No leads yet</h3>
-
-    <p>
-      You don't have any leads yet.
-    </p>
-
-    <div class="empty-actions">
-
-      <a
-        routerLink="/leads/new"
-        class="primary-btn"
-      >
-        Create First Lead
-      </a>
-
-    </div>
-
   }
 
-</div>
 
-}
+  @if (loading()) {
+    <div class="state-card">
+      <div class="spinner"></div>
+      <p>Loading leads…</p>
+    </div>
+  }
 
-  <!-- =========================
-       Leads Table
-  ========================== -->
 
-@if (
-!loading() &&
-!error() &&
-filteredLeads().length > 0
-) {
+  @if (!loading() && !error()) {
 
-<div class="table-card">
+    @if (filteredLeads().length === 0) {
 
-  <div class="table-wrapper">
+      <div class="state-card empty-state">
 
-    <table>
+        <div class="empty-icon">👥</div>
 
-      <!-- Table Header -->
+        @if (search()) {
 
-      <thead>
+          <h3>No leads found</h3>
+          <p>Try a different search term.</p>
 
-        <tr>
+          <button
+            type="button"
+            class="secondary-btn"
+            (click)="clearSearch()"
+          >
+            Clear search
+          </button>
 
-          <th>
-            Lead
-          </th>
+        } @else {
 
-          <th>
-            Company
-          </th>
+          <h3>No leads yet</h3>
+          <p>Create your first lead to get started.</p>
 
-          <th>
-            Email
-          </th>
-
-          <th>
-            Budget
-          </th>
-
-          <th>
-            Status
-          </th>
-
-          <th>
-            Created
-          </th>
-
-          <th class="actions-column">
-          </th>
-
-        </tr>
-
-      </thead>
-
-
-      <!-- Table Body -->
-
-      <tbody>
-
-        @for (
-          lead of filteredLeads();
-          track lead._id
-        ) {
-
-          <tr>
-
-            <!-- Lead -->
-
-            <td>
-
-              <div class="lead-name">
-                {{ lead.name || 'Unnamed Lead' }}
-              </div>
-
-              <div class="lead-requirement">
-                {{ lead.requirement || 'No requirement provided' }}
-              </div>
-
-            </td>
-
-
-            <!-- Company -->
-
-            <td>
-
-              {{ lead.company || '—' }}
-
-            </td>
-
-
-            <!-- Email -->
-
-            <td>
-
-              @if (lead.email) {
-
-                <a
-                  [href]="'mailto:' + lead.email"
-                  class="email-link"
-                >
-                  {{ lead.email }}
-                </a>
-
-              } @else {
-
-                —
-
-              }
-
-            </td>
-
-
-            <!-- Budget -->
-
-            <td>
-
-              @if (
-                lead.budget !== null &&
-                lead.budget !== undefined
-              ) {
-
-                ${{ lead.budget | number }}
-
-              } @else {
-
-                —
-
-              }
-
-            </td>
-
-
-            <!-- Status -->
-
-            <td>
-
-              <span
-                class="status-badge"
-                [ngClass]="getStatusClass(lead.status)"
-              >
-                {{ formatStatus(lead.status) }}
-              </span>
-
-            </td>
-
-
-            <!-- Created -->
-
-            <td>
-
-              @if (lead.createdAt) {
-
-                {{ lead.createdAt | date:'MMM d, yyyy' }}
-
-              } @else {
-
-                —
-
-              }
-
-            </td>
-
-
-            <!-- Actions -->
-
-            <td class="actions-column">
-
-              @if (lead._id) {
-
-                <a
-                  [routerLink]="['/leads', lead._id]"
-                  class="view-btn"
-                >
-                  View
-                </a>
-
-              }
-
-            </td>
-
-          </tr>
+          <a routerLink="/leads/new" class="primary-btn">
+            Create lead
+          </a>
 
         }
 
-      </tbody>
+      </div>
 
-    </table>
+    } @else {
 
-  </div>
+      <div class="leads-card">
 
-</div>
+        <div class="table-header">
+          <span>
+            <strong>{{ filteredLeads().length }}</strong>
+            {{ filteredLeads().length === 1 ? 'lead' : 'leads' }}
+          </span>
+        </div>
 
-}
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Email</th>
+                <th>Budget</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (lead of filteredLeads(); track lead._id) {
+
+                <tr>
+
+                  <td>
+                    <a [routerLink]="['/leads', lead._id]" class="lead-name">
+                      {{ lead.name || 'Unnamed lead' }}
+                    </a>
+                  </td>
+
+                  <td class="cell-muted">
+                    {{ lead.company || '—' }}
+                  </td>
+
+                  <td class="cell-muted">
+                    {{ lead.email || '—' }}
+                  </td>
+
+                  <td class="cell-budget">
+                    {{ (lead.budget !== undefined && lead.budget !== null) ? (lead.budget | number) : '—' }}
+                  </td>
+
+                  <td>
+                    <span
+                      class="status-badge"
+                      [class]="getStatusClass(lead.status)"
+                    >
+                      {{ formatStatus(lead.status) }}
+                    </span>
+                  </td>
+
+                  <td class="cell-date">
+                    {{ lead.createdAt ? (lead.createdAt | date:'MMM d, y') : '—' }}
+                  </td>
+
+                  <td>
+                    <a [routerLink]="['/leads', lead._id]" class="view-btn">
+                      View →
+                    </a>
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    }
+
+  }
 
 </div>
