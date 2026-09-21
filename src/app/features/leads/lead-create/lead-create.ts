@@ -1,26 +1,9 @@
-import {
-  Component
-} from '@angular/core';
-
-import {
-  CommonModule
-} from '@angular/common';
-
-import {
-  FormsModule
-} from '@angular/forms';
-
-import {
-  Router
-} from '@angular/router';
-
-import {
-  CrmService
-} from '../../../core/services/crm';
-
-import {
-  Lead
-} from '../../../core/models/crm.models';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CrmService } from '../../../core/services/crm';
+import { Lead } from '../../../core/models/crm.models';
 
 @Component({
   selector: 'app-lead-create',
@@ -33,31 +16,19 @@ import {
   styleUrl: './lead-create.scss'
 })
 export class LeadCreateComponent {
-
   lead: Lead = {
-
     name: '',
-
     company: '',
-
     email: '',
-
     phone: '',
-
-    budget: undefined,
-
+    budget: 0,
     requirement: '',
-
     message: '',
-
     status: 'new',
-
     source: 'website'
-
   };
 
   saving = false;
-
   error = '';
 
   constructor(
@@ -66,47 +37,39 @@ export class LeadCreateComponent {
   ) {}
 
   submit(): void {
+    this.error = '';
+
+    if (!this.lead.name.trim() || !this.lead.email.trim()) {
+      this.error = 'Name and email are required.';
+      return;
+    }
 
     this.saving = true;
 
-    this.error = '';
-
-    this.crm.createLead(
-      this.lead
-    )
-    .subscribe({
-
-      next: response => {
-
+    this.crm.createLead(this.lead).subscribe({
+      next: (response) => {
         this.saving = false;
 
-        this.router.navigate([
-          '/leads',
-          response.lead._id
-        ]);
-
+        if (response.success && response.lead?._id) {
+          this.router.navigate(['/leads', response.lead._id]);
+        } else {
+          this.error = 'Lead was created but no lead ID was returned.';
+        }
       },
-
-      error: error => {
-
+      error: (error: unknown) => {
         this.saving = false;
+
+        console.error('Create lead error:', error);
 
         this.error =
-          error?.error?.error ||
-          'Unable to create lead.';
-
+          error instanceof Error
+            ? error.message
+            : 'Unable to create lead.';
       }
-
     });
-
   }
 
   cancel(): void {
-
-    this.router.navigate([
-      '/leads'
-    ]);
-
+    this.router.navigate(['/leads']);
   }
-
 }

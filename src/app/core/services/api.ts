@@ -6,25 +6,15 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-
   private readonly baseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(
-      `${this.baseUrl}${endpoint}`
-    );
+    return this.http.get<T>(`${this.baseUrl}${endpoint}`);
   }
 
-  post<T>(
-    endpoint: string,
-    body: unknown
-  ): Observable<T> {
-    return this.http.post<T>(
-      `${this.baseUrl}${endpoint}`,
-      body
-    );
+  post<T>(endpoint: string, body: unknown): Observable<T> {
+    return this.http.post<T>(`${this.baseUrl}${endpoint}`, body);
   }
-
 }

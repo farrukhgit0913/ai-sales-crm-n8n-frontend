@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 
-import {
-  ApiService
-} from './api';
+import { ApiService } from './api';
 
 import {
   Lead,
@@ -18,97 +15,43 @@ import {
   providedIn: 'root'
 })
 export class CrmService {
+  constructor(private api: ApiService) {}
 
-  constructor(
-    private api: ApiService
-  ) {}
-
-  // -----------------------------------------------
-  // System
-  // -----------------------------------------------
-
-  getHealth(): Observable<HealthResponse> {
-    return this.api.get<HealthResponse>(
-      '/health'
-    );
+  getHealth() {
+    return this.api.get<HealthResponse>('/health');
   }
 
-  getSystemStatus(): Observable<SystemStatus> {
-    return this.api.get<SystemStatus>(
-      '/status'
-    );
+  getSystemStatus() {
+    return this.api.get<SystemStatus>('/status');
   }
 
-  // -----------------------------------------------
-  // Leads
-  // -----------------------------------------------
-
-  getLeads(): Observable<LeadsResponse> {
-    return this.api.get<LeadsResponse>(
-      '/leads'
-    );
+  getLeads() {
+    return this.api.get<LeadsResponse>('/leads');
   }
 
-  createLead(
-    lead: Lead
-  ): Observable<LeadResponse> {
-
-    return this.api.post<LeadResponse>(
-      '/leads',
-      lead
-    );
-
+  createLead(lead: Lead) {
+    return this.api.post<LeadResponse>('/leads', lead);
   }
 
-  // -----------------------------------------------
-  // AI
-  // -----------------------------------------------
-
-  testAi(
-    prompt: string
-  ): Observable<AiTestResponse> {
-
-    return this.api.post<AiTestResponse>(
-      '/ai/test',
-      {
-        prompt
-      }
-    );
-
+  testAi(prompt: string) {
+    return this.api.post<AiTestResponse>('/ai/test', {
+      prompt
+    });
   }
 
-  // -----------------------------------------------
-  // n8n
-  // -----------------------------------------------
-
-  sendLeadToN8n(
-    lead: Lead
-  ): Observable<any> {
-
-    return this.api.post(
-      '/n8n/lead',
-      lead
-    );
-
+  sendLeadToN8n(lead: Lead) {
+    return this.api.post<unknown>('/n8n/lead', lead);
   }
 
-  // -----------------------------------------------
-  // Email
-  // -----------------------------------------------
-
-  testEmail(
-    data: {
-      to?: string;
-      subject?: string;
-      text?: string;
-    }
-  ): Observable<any> {
-
-    return this.api.post(
-      '/email/test',
-      data
-    );
-
+  testEmail(data: {
+    to: string;
+    subject: string;
+    text: string;
+  }) {
+    return this.api.post<{
+      success: boolean;
+      message?: string;
+      error?: string;
+    }>('/email/test', data);
   }
-
 }
