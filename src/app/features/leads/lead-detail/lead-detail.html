@@ -1,0 +1,41 @@
+<div class="page">
+
+  <a routerLink="/leads">← Back to Leads</a>
+
+  <div *ngIf="loading">
+    Loading lead...
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="lead" class="panel">
+
+    <h1>{{ lead.name }}</h1>
+
+    <p>{{ lead.company || 'No company' }}</p>
+
+    <hr>
+
+    <p><strong>Email:</strong> {{ lead.email }}</p>
+
+    <p><strong>Phone:</strong> {{ lead.phone || '—' }}</p>
+
+    <p><strong>Budget:</strong> {{ lead.budget || '—' }}</p>
+
+    <p><strong>Status:</strong> {{ lead.status }}</p>
+
+    <p>
+      <strong>Requirement:</strong>
+      {{ lead.requirement || '—' }}
+    </p>
+
+    <p>
+      <strong>Message:</strong>
+      {{ lead.message || '—' }}
+    </p>
+
+  </div>
+
+</div>

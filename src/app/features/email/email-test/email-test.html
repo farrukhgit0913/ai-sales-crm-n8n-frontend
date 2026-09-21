@@ -1,0 +1,54 @@
+<div class="page">
+
+  <h1>Email Test</h1>
+
+  <p>
+    Send a test email through Mailpit.
+  </p>
+
+  <div class="panel">
+
+    <label>To</label>
+
+    <input
+      [(ngModel)]="to"
+      type="email"
+    >
+
+    <label>Subject</label>
+
+    <input
+      [(ngModel)]="subject"
+    >
+
+    <label>Message</label>
+
+    <textarea
+      [(ngModel)]="text"
+      rows="8"
+    ></textarea>
+
+    <button
+      (click)="sendEmail()"
+      [disabled]="sending"
+    >
+      {{ sending ? 'Sending...' : 'Send Test Email' }}
+    </button>
+
+  </div>
+
+  <div
+    *ngIf="success"
+    class="success"
+  >
+    ✓ {{ success }}
+  </div>
+
+  <div
+    *ngIf="error"
+    class="error"
+  >
+    {{ error }}
+  </div>
+
+</div>

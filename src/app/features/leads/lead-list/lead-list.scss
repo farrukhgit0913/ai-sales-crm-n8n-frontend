@@ -1,0 +1,91 @@
+.page {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.heading h1 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.heading p {
+  margin: 5px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.primary-button {
+  background: #4f46e5;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.toolbar {
+  margin-bottom: 15px;
+}
+
+.toolbar input {
+  width: 100%;
+  max-width: 450px;
+  padding: 11px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  outline: none;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #f0f1f3;
+  font-size: 13px;
+}
+
+th {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.status {
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: #f3f4f6;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.view-link {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.loading,
+.empty {
+  padding: 60px;
+  text-align: center;
+  color: #6b7280;
+}

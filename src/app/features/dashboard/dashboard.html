@@ -1,0 +1,281 @@
+<div class="dashboard">
+
+  <div class="page-heading">
+
+    <div>
+      <h1>Dashboard</h1>
+      <p>
+        Overview of your sales pipeline and AI services.
+      </p>
+    </div>
+
+    <button
+      class="refresh-button"
+      (click)="loadDashboard()"
+    >
+      ↻ Refresh
+    </button>
+
+  </div>
+
+  <div
+    class="error"
+    *ngIf="error"
+  >
+    {{ error }}
+  </div>
+
+  <!-- KPI -->
+
+  <div class="kpi-grid">
+
+    <div class="kpi-card">
+
+      <span>Total Leads</span>
+
+      <strong>
+        {{ totalLeads }}
+      </strong>
+
+      <small>CRM records</small>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span>New Leads</span>
+
+      <strong>
+        {{ newLeads }}
+      </strong>
+
+      <small>Awaiting qualification</small>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span>Qualified Leads</span>
+
+      <strong>
+        {{ qualifiedLeads }}
+      </strong>
+
+      <small>AI-qualified prospects</small>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span>Services Online</span>
+
+      <strong>
+        {{ status?.summary?.online || 0 }}
+      </strong>
+
+      <small>
+        of {{ status?.summary?.total || 0 }}
+        services
+      </small>
+
+    </div>
+
+  </div>
+
+  <div class="dashboard-grid">
+
+    <!-- Recent Leads -->
+
+    <section class="panel leads-panel">
+
+      <div class="panel-header">
+
+        <div>
+          <h2>Recent Leads</h2>
+          <p>Latest CRM activity</p>
+        </div>
+
+        <a routerLink="/leads">
+          View all →
+        </a>
+
+      </div>
+
+      <div
+        class="empty"
+        *ngIf="!leads.length && !loading"
+      >
+        No leads found.
+      </div>
+
+      <div class="table-wrapper"
+           *ngIf="leads.length">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Email</th>
+              <th>Status</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr
+              *ngFor="let lead of leads.slice(0, 6)"
+            >
+
+              <td>
+                <strong>
+                  {{ lead.name }}
+                </strong>
+              </td>
+
+              <td>
+                {{ lead.company || '—' }}
+              </td>
+
+              <td>
+                {{ lead.email }}
+              </td>
+
+              <td>
+                <span
+                  class="status"
+                  [class.qualified]="lead.status === 'qualified'"
+                >
+                  {{ lead.status }}
+                </span>
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+    <!-- System -->
+
+    <section class="panel system-panel">
+
+      <div class="panel-header">
+
+        <div>
+          <h2>System Status</h2>
+          <p>Local infrastructure</p>
+        </div>
+
+        <a routerLink="/workflows">
+          Details →
+        </a>
+
+      </div>
+
+      <div class="services">
+
+        <div class="service">
+
+          <span
+            class="dot"
+            [class.online]="isOnline('backend')"
+          ></span>
+
+          <span>Express Backend</span>
+
+          <strong>
+            {{ isOnline('backend') ? 'Online' : 'Offline' }}
+          </strong>
+
+        </div>
+
+        <div class="service">
+
+          <span
+            class="dot"
+            [class.online]="isOnline('mongodb')"
+          ></span>
+
+          <span>MongoDB</span>
+
+          <strong>
+            {{ isOnline('mongodb') ? 'Online' : 'Offline' }}
+          </strong>
+
+        </div>
+
+        <div class="service">
+
+          <span
+            class="dot"
+            [class.online]="isOnline('n8n')"
+          ></span>
+
+          <span>n8n</span>
+
+          <strong>
+            {{ isOnline('n8n') ? 'Online' : 'Offline' }}
+          </strong>
+
+        </div>
+
+        <div class="service">
+
+          <span
+            class="dot"
+            [class.online]="isOnline('ollama')"
+          ></span>
+
+          <span>Ollama</span>
+
+          <strong>
+            {{ isOnline('ollama') ? 'Online' : 'Offline' }}
+          </strong>
+
+        </div>
+
+        <div class="service">
+
+          <span
+            class="dot"
+            [class.online]="isOnline('qwen3')"
+          ></span>
+
+          <span>Qwen3</span>
+
+          <strong>
+            {{ isOnline('qwen3') ? 'Online' : 'Offline' }}
+          </strong>
+
+        </div>
+
+        <div class="service">
+
+          <span
+            class="dot"
+            [class.online]="isOnline('mailpit')"
+          ></span>
+
+          <span>Mailpit</span>
+
+          <strong>
+            {{ isOnline('mailpit') ? 'Online' : 'Offline' }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>

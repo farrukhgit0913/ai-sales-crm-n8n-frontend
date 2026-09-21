@@ -1,0 +1,143 @@
+<div class="page">
+
+  <div class="heading">
+
+    <div>
+      <h1>Create Lead</h1>
+      <p>Add a new prospect to your CRM.</p>
+    </div>
+
+  </div>
+
+  <div class="form-panel">
+
+    <div
+      class="error"
+      *ngIf="error"
+    >
+      {{ error }}
+    </div>
+
+    <form
+      #form="ngForm"
+      (ngSubmit)="submit()"
+    >
+
+      <div class="form-grid">
+
+        <div class="field">
+
+          <label>Full Name *</label>
+
+          <input
+            name="name"
+            [(ngModel)]="lead.name"
+            required
+            placeholder="Ahmed Khan"
+          />
+
+        </div>
+
+        <div class="field">
+
+          <label>Company</label>
+
+          <input
+            name="company"
+            [(ngModel)]="lead.company"
+            placeholder="Toyota"
+          />
+
+        </div>
+
+        <div class="field">
+
+          <label>Email *</label>
+
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="lead.email"
+            required
+            placeholder="ahmed@example.com"
+          />
+
+        </div>
+
+        <div class="field">
+
+          <label>Phone</label>
+
+          <input
+            name="phone"
+            [(ngModel)]="lead.phone"
+            placeholder="+92..."
+          />
+
+        </div>
+
+        <div class="field">
+
+          <label>Budget</label>
+
+          <input
+            type="number"
+            name="budget"
+            [(ngModel)]="lead.budget"
+            placeholder="25000"
+          />
+
+        </div>
+
+      </div>
+
+      <div class="field">
+
+        <label>Requirement</label>
+
+        <input
+          name="requirement"
+          [(ngModel)]="lead.requirement"
+          placeholder="Looking for a Toyota SUV..."
+        />
+
+      </div>
+
+      <div class="field">
+
+        <label>Message</label>
+
+        <textarea
+          name="message"
+          [(ngModel)]="lead.message"
+          rows="5"
+          placeholder="Additional information..."
+        ></textarea>
+
+      </div>
+
+      <div class="actions">
+
+        <button
+          type="button"
+          class="secondary"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="primary"
+          [disabled]="form.invalid || saving"
+        >
+          {{ saving ? 'Creating...' : 'Create Lead' }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>

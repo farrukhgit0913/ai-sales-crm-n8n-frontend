@@ -1,0 +1,105 @@
+<div class="page">
+
+  <div class="heading">
+
+    <div>
+      <h1>Leads</h1>
+      <p>Manage your sales pipeline.</p>
+    </div>
+
+    <a
+      routerLink="/leads/new"
+      class="primary-button"
+    >
+      + New Lead
+    </a>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      type="search"
+      [(ngModel)]="search"
+      placeholder="Search name, company or email..."
+    />
+
+  </div>
+
+  <div class="panel">
+
+    <div
+      class="loading"
+      *ngIf="loading"
+    >
+      Loading leads...
+    </div>
+
+    <div
+      class="empty"
+      *ngIf="!loading && !filteredLeads.length"
+    >
+      No leads found.
+    </div>
+
+    <table
+      *ngIf="!loading && filteredLeads.length"
+    >
+
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Company</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr
+          *ngFor="let lead of filteredLeads"
+        >
+
+          <td>
+            <strong>{{ lead.name }}</strong>
+          </td>
+
+          <td>
+            {{ lead.company || '—' }}
+          </td>
+
+          <td>
+            {{ lead.email }}
+          </td>
+
+          <td>
+            {{ lead.phone || '—' }}
+          </td>
+
+          <td>
+            <span class="status">
+              {{ lead.status }}
+            </span>
+          </td>
+
+          <td>
+            <a
+              [routerLink]="['/leads', lead._id]"
+              class="view-link"
+            >
+              View
+            </a>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
