@@ -1,278 +1,816 @@
 <div class="dashboard">
 
+  <!-- =========================
+       PAGE HEADER
+       ========================= -->
+
   <div class="page-heading">
 
-    <div>
-      <h1>Dashboard</h1>
+    <div class="heading-content">
+
+      <span class="eyebrow">
+        Sales Overview
+      </span>
+
+      <h1>
+        Dashboard
+      </h1>
+
       <p>
-        Overview of your sales pipeline and AI services.
+        Monitor your sales pipeline, leads, and connected services.
       </p>
+
     </div>
 
     <button
+      type="button"
       class="refresh-button"
       (click)="loadDashboard()"
+      [disabled]="loading()"
     >
-      ↻ Refresh
+
+      <span class="refresh-icon">
+        ↻
+      </span>
+
+      @if (loading()) {
+        Refreshing...
+      } @else {
+        Refresh
+      }
+
     </button>
 
   </div>
 
-  <div
-    class="error"
-    *ngIf="error"
-  >
-    {{ error }}
-  </div>
 
-  <!-- KPI -->
+  <!-- =========================
+       ERROR
+       ========================= -->
+
+  @if (error()) {
+
+    <div class="error-banner">
+
+      <div class="error-icon">
+        !
+      </div>
+
+      <div class="error-content">
+
+        <strong>
+          Unable to load dashboard
+        </strong>
+
+        <p>
+          {{ error() }}
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="retry-button"
+        (click)="loadDashboard()"
+      >
+        Retry
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- =========================
+       KPI CARDS
+       ========================= -->
 
   <div class="kpi-grid">
 
+    <!-- Total Leads -->
+
     <div class="kpi-card">
 
-      <span>Total Leads</span>
+      <div class="kpi-top">
 
-      <strong>
-        {{ totalLeads }}
-      </strong>
+        <span class="kpi-label">
+          Total Leads
+        </span>
 
-      <small>CRM records</small>
+        <div class="kpi-icon leads-icon">
+          <span>♧</span>
+        </div>
+
+      </div>
+
+      <div class="kpi-value">
+        {{ totalLeads() }}
+      </div>
+
+      <div class="kpi-footer">
+
+        <span class="kpi-indicator"></span>
+
+        <span>
+          CRM records
+        </span>
+
+      </div>
 
     </div>
 
+
+    <!-- New Leads -->
+
     <div class="kpi-card">
 
-      <span>New Leads</span>
+      <div class="kpi-top">
 
-      <strong>
-        {{ newLeads }}
-      </strong>
+        <span class="kpi-label">
+          New Leads
+        </span>
 
-      <small>Awaiting qualification</small>
+        <div class="kpi-icon new-icon">
+          <span>+</span>
+        </div>
+
+      </div>
+
+      <div class="kpi-value">
+        {{ newLeads() }}
+      </div>
+
+      <div class="kpi-footer">
+
+        <span class="kpi-indicator"></span>
+
+        <span>
+          Awaiting qualification
+        </span>
+
+      </div>
 
     </div>
 
+
+    <!-- Qualified Leads -->
+
     <div class="kpi-card">
 
-      <span>Qualified Leads</span>
+      <div class="kpi-top">
 
-      <strong>
-        {{ qualifiedLeads }}
-      </strong>
+        <span class="kpi-label">
+          Qualified Leads
+        </span>
 
-      <small>AI-qualified prospects</small>
+        <div class="kpi-icon qualified-icon">
+          <span>✓</span>
+        </div>
+
+      </div>
+
+      <div class="kpi-value">
+        {{ qualifiedLeads() }}
+      </div>
+
+      <div class="kpi-footer">
+
+        <span class="kpi-indicator"></span>
+
+        <span>
+          AI-qualified prospects
+        </span>
+
+      </div>
 
     </div>
 
+
+    <!-- Services -->
+
     <div class="kpi-card">
 
-      <span>Services Online</span>
+      <div class="kpi-top">
 
-      <strong>
-        {{ status?.summary?.online || 0 }}
-      </strong>
+        <span class="kpi-label">
+          Services Online
+        </span>
 
-      <small>
-        of {{ status?.summary?.total || 0 }}
-        services
-      </small>
+        <div class="kpi-icon service-icon">
+          <span>◉</span>
+        </div>
+
+      </div>
+
+      <div class="kpi-value">
+
+        {{ onlineServices() }}
+
+        <small>
+          / {{ totalServices() }}
+        </small>
+
+      </div>
+
+      <div class="kpi-footer">
+
+        <span
+          class="kpi-indicator"
+          [class.offline]="
+            onlineServices() !== totalServices()
+          "
+        ></span>
+
+        <span>
+          Connected services
+        </span>
+
+      </div>
 
     </div>
 
   </div>
 
+
+  <!-- =========================
+       MAIN GRID
+       ========================= -->
+
   <div class="dashboard-grid">
 
-    <!-- Recent Leads -->
+
+    <!-- =========================
+         RECENT LEADS
+         ========================= -->
 
     <section class="panel leads-panel">
 
       <div class="panel-header">
 
         <div>
-          <h2>Recent Leads</h2>
-          <p>Latest CRM activity</p>
+
+          <span class="panel-eyebrow">
+            CRM
+          </span>
+
+          <h2>
+            Recent Leads
+          </h2>
+
+          <p>
+            Latest activity in your sales pipeline.
+          </p>
+
         </div>
 
-        <a routerLink="/leads">
-          View all →
+        <a
+          routerLink="/leads"
+          class="panel-link"
+        >
+          View all
+          <span>→</span>
         </a>
 
       </div>
 
-      <div
-        class="empty"
-        *ngIf="!leads.length && !loading"
-      >
-        No leads found.
-      </div>
 
-      <div class="table-wrapper"
-           *ngIf="leads.length">
+      <!-- Loading -->
 
-        <table>
+      @if (
+        loading() &&
+        !leads().length
+      ) {
 
-          <thead>
+        <div class="panel-loading">
 
-            <tr>
-              <th>Name</th>
-              <th>Company</th>
-              <th>Email</th>
-              <th>Status</th>
-            </tr>
+          <div class="spinner"></div>
 
-          </thead>
+          <span>
+            Loading leads...
+          </span>
 
-          <tbody>
+        </div>
 
-            <tr
-              *ngFor="let lead of leads.slice(0, 6)"
-            >
+      }
 
-              <td>
-                <strong>
-                  {{ lead.name }}
-                </strong>
-              </td>
 
-              <td>
-                {{ lead.company || '—' }}
-              </td>
+      <!-- Empty -->
 
-              <td>
-                {{ lead.email }}
-              </td>
+      @else if (!leads().length) {
 
-              <td>
-                <span
-                  class="status"
-                  [class.qualified]="lead.status === 'qualified'"
-                >
-                  {{ lead.status }}
-                </span>
-              </td>
+        <div class="empty">
 
-            </tr>
+          <div class="empty-icon">
+            ♧
+          </div>
 
-          </tbody>
+          <strong>
+            No leads yet
+          </strong>
 
-        </table>
+          <p>
+            Create your first lead to start building your pipeline.
+          </p>
 
-      </div>
+          <a
+            routerLink="/leads/new"
+            class="empty-action"
+          >
+            + Create Lead
+          </a>
+
+        </div>
+
+      }
+
+
+      <!-- Leads Table -->
+
+      @else {
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Lead
+                </th>
+
+                <th>
+                  Company
+                </th>
+
+                <th>
+                  Email
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              @for (
+                lead of recentLeads();
+                track lead._id
+              ) {
+
+                <tr>
+
+                  <!-- Lead -->
+
+                  <td>
+
+                    <div class="lead-cell">
+
+                      <div class="lead-avatar">
+
+                        {{ getInitials(lead.name) }}
+
+                      </div>
+
+                      <div class="lead-info">
+
+                        <strong>
+                          {{ lead.name || 'Unnamed Lead' }}
+                        </strong>
+
+                        <span>
+                          {{ lead.phone || 'No phone number' }}
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                  </td>
+
+
+                  <!-- Company -->
+
+                  <td>
+
+                    <span class="company-name">
+                      {{ lead.company || '—' }}
+                    </span>
+
+                  </td>
+
+
+                  <!-- Email -->
+
+                  <td>
+
+                    <span class="email">
+                      {{ lead.email || '—' }}
+                    </span>
+
+                  </td>
+
+
+                  <!-- Status -->
+
+                  <td>
+
+                    <span
+                      class="status"
+
+                      [class.qualified]="
+                        lead.status === 'qualified'
+                      "
+
+                      [class.new]="
+                        lead.status === 'new'
+                      "
+
+                      [class.contacted]="
+                        lead.status === 'contacted'
+                      "
+
+                      [class.proposal]="
+                        lead.status === 'proposal'
+                      "
+
+                      [class.negotiation]="
+                        lead.status === 'negotiation'
+                      "
+
+                      [class.won]="
+                        lead.status === 'won' ||
+                        lead.status === 'converted'
+                      "
+
+                      [class.lost]="
+                        lead.status === 'lost'
+                      "
+                    >
+
+                      <span class="status-dot"></span>
+
+                      {{ formatStatus(lead.status) }}
+
+                    </span>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
 
     </section>
 
-    <!-- System -->
+
+    <!-- =========================
+         SYSTEM STATUS
+         ========================= -->
 
     <section class="panel system-panel">
 
       <div class="panel-header">
 
         <div>
-          <h2>System Status</h2>
-          <p>Local infrastructure</p>
+
+          <span class="panel-eyebrow">
+            Infrastructure
+          </span>
+
+          <h2>
+            System Status
+          </h2>
+
+          <p>
+            Current status of connected services.
+          </p>
+
         </div>
 
-        <a routerLink="/workflows">
-          Details →
+        <a
+          routerLink="/workflows"
+          class="panel-link"
+        >
+          Details
+          <span>→</span>
         </a>
 
       </div>
 
-      <div class="services">
 
-        <div class="service">
+      <!-- Loading -->
 
-          <span
-            class="dot"
-            [class.online]="isOnline('backend')"
-          ></span>
+      @if (
+        loading() &&
+        !status()
+      ) {
 
-          <span>Express Backend</span>
+        <div class="panel-loading">
 
-          <strong>
-            {{ isOnline('backend') ? 'Online' : 'Offline' }}
-          </strong>
+          <div class="spinner"></div>
 
-        </div>
-
-        <div class="service">
-
-          <span
-            class="dot"
-            [class.online]="isOnline('mongodb')"
-          ></span>
-
-          <span>MongoDB</span>
-
-          <strong>
-            {{ isOnline('mongodb') ? 'Online' : 'Offline' }}
-          </strong>
+          <span>
+            Checking services...
+          </span>
 
         </div>
 
-        <div class="service">
+      }
 
-          <span
-            class="dot"
-            [class.online]="isOnline('n8n')"
-          ></span>
 
-          <span>n8n</span>
+      <!-- Services -->
 
-          <strong>
-            {{ isOnline('n8n') ? 'Online' : 'Offline' }}
-          </strong>
+      @else {
+
+        <div class="services">
+
+
+          <!-- =========================
+               EXPRESS BACKEND
+               ========================= -->
+
+          <div class="service">
+
+            <div class="service-left">
+
+              <span
+                class="dot"
+                [class.online]="
+                  isOnline('backend')
+                "
+              ></span>
+
+              <div>
+
+                <strong>
+                  Express Backend
+                </strong>
+
+                <span>
+                  API Server
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong
+              class="service-status"
+              [class.online-text]="
+                isOnline('backend')
+              "
+            >
+              {{
+                isOnline('backend')
+                  ? 'Online'
+                  : 'Offline'
+              }}
+            </strong>
+
+          </div>
+
+
+          <!-- =========================
+               MONGODB
+               ========================= -->
+
+          <div class="service">
+
+            <div class="service-left">
+
+              <span
+                class="dot"
+                [class.online]="
+                  isOnline('mongodb')
+                "
+              ></span>
+
+              <div>
+
+                <strong>
+                  MongoDB
+                </strong>
+
+                <span>
+                  Database
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong
+              class="service-status"
+              [class.online-text]="
+                isOnline('mongodb')
+              "
+            >
+              {{
+                isOnline('mongodb')
+                  ? 'Online'
+                  : 'Offline'
+              }}
+            </strong>
+
+          </div>
+
+
+          <!-- =========================
+               N8N
+               ========================= -->
+
+          <div class="service">
+
+            <div class="service-left">
+
+              <span
+                class="dot"
+                [class.online]="
+                  isOnline('n8n')
+                "
+              ></span>
+
+              <div>
+
+                <strong>
+                  n8n
+                </strong>
+
+                <span>
+                  Automation
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong
+              class="service-status"
+              [class.online-text]="
+                isOnline('n8n')
+              "
+            >
+              {{
+                isOnline('n8n')
+                  ? 'Online'
+                  : 'Offline'
+              }}
+            </strong>
+
+          </div>
+
+
+          <!-- =========================
+               OLLAMA
+               ========================= -->
+
+          <div class="service">
+
+            <div class="service-left">
+
+              <span
+                class="dot"
+                [class.online]="
+                  isOnline('ollama')
+                "
+              ></span>
+
+              <div>
+
+                <strong>
+                  Ollama
+                </strong>
+
+                <span>
+                  Local AI Runtime
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong
+              class="service-status"
+              [class.online-text]="
+                isOnline('ollama')
+              "
+            >
+              {{
+                isOnline('ollama')
+                  ? 'Online'
+                  : 'Offline'
+              }}
+            </strong>
+
+          </div>
+
+
+          <!-- =========================
+               QWEN3
+               ========================= -->
+
+          <div class="service">
+
+            <div class="service-left">
+
+              <span
+                class="dot"
+                [class.online]="
+                  isOnline('qwen3')
+                "
+              ></span>
+
+              <div>
+
+                <strong>
+                  Qwen3
+                </strong>
+
+                <span>
+                  AI Model
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong
+              class="service-status"
+              [class.online-text]="
+                isOnline('qwen3')
+              "
+            >
+              {{
+                isOnline('qwen3')
+                  ? 'Online'
+                  : 'Offline'
+              }}
+            </strong>
+
+          </div>
+
+
+          <!-- =========================
+               MAILPIT
+               ========================= -->
+
+          <div class="service">
+
+            <div class="service-left">
+
+              <span
+                class="dot"
+                [class.online]="
+                  isOnline('mailpit')
+                "
+              ></span>
+
+              <div>
+
+                <strong>
+                  Mailpit
+                </strong>
+
+                <span>
+                  Email Testing
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong
+              class="service-status"
+              [class.online-text]="
+                isOnline('mailpit')
+              "
+            >
+              {{
+                isOnline('mailpit')
+                  ? 'Online'
+                  : 'Offline'
+              }}
+            </strong>
+
+          </div>
+
 
         </div>
 
-        <div class="service">
-
-          <span
-            class="dot"
-            [class.online]="isOnline('ollama')"
-          ></span>
-
-          <span>Ollama</span>
-
-          <strong>
-            {{ isOnline('ollama') ? 'Online' : 'Offline' }}
-          </strong>
-
-        </div>
-
-        <div class="service">
-
-          <span
-            class="dot"
-            [class.online]="isOnline('qwen3')"
-          ></span>
-
-          <span>Qwen3</span>
-
-          <strong>
-            {{ isOnline('qwen3') ? 'Online' : 'Offline' }}
-          </strong>
-
-        </div>
-
-        <div class="service">
-
-          <span
-            class="dot"
-            [class.online]="isOnline('mailpit')"
-          ></span>
-
-          <span>Mailpit</span>
-
-          <strong>
-            {{ isOnline('mailpit') ? 'Online' : 'Offline' }}
-          </strong>
-
-        </div>
-
-      </div>
+      }
 
     </section>
 

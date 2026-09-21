@@ -1,6 +1,8 @@
 import {
   Component,
-  OnInit
+  OnInit,
+  computed,
+  signal
 } from '@angular/core';
 
 import {
@@ -30,105 +32,260 @@ import {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class DashboardComponent
-  implements OnInit {
+export class DashboardComponent implements OnInit {
 
-  leads: Lead[] = [];
+  // =========================
+  // STATE
+  // =========================
 
-  status: SystemStatus | null = null;
+  readonly leads = signal<Lead[]>([]);
 
-  loading = true;
+  readonly status =
+    signal<SystemStatus | null>(null);
 
-  error = '';
+  readonly loading =
+    signal(false);
+
+  readonly error =
+    signal('');
+
+
+  // =========================
+  // COMPUTED
+  // =========================
+
+  readonly totalLeads = computed(() => {
+    return this.leads().length;
+  });
+
+
+  readonly newLeads = computed(() => {
+    return this.leads().filter(
+      lead =>
+        lead.status?.toLowerCase() === 'new'
+    ).length;
+  });
+
+
+  readonly qualifiedLeads = computed(() => {
+    return this.leads().filter(
+      lead =>
+        lead.status?.toLowerCase() === 'qualified'
+    ).length;
+  });
+
+
+  readonly recentLeads = computed(() => {
+    return this.leads().slice(0, 6);
+  });
+
+
+  readonly onlineServices = computed(() => {
+    return this.status()
+      ?.summary
+      ?.online ?? 0;
+  });
+
+
+  readonly totalServices = computed(() => {
+    return this.status()
+      ?.summary
+      ?.total ?? 0;
+  });
+
+
+  readonly allServicesOnline = computed(() => {
+    const total =
+      this.totalServices();
+
+    return total > 0 &&
+      this.onlineServices() === total;
+  });
+
+
+  // =========================
+  // CONSTRUCTOR
+  // =========================
 
   constructor(
-    private crm: CrmService
+    private readonly crm: CrmService
   ) {}
 
+
+  // =========================
+  // INIT
+  // =========================
+
   ngOnInit(): void {
-
     this.loadDashboard();
-
   }
+
+
+  // =========================
+  // LOAD DASHBOARD
+  // =========================
 
   loadDashboard(): void {
 
-    this.loading = true;
+    this.loading.set(true);
+    this.error.set('');
+
+    let leadsLoaded = false;
+    let statusLoaded = false;
+
+    const finishLoading = () => {
+
+      if (
+        leadsLoaded &&
+        statusLoaded
+      ) {
+        this.loading.set(false);
+      }
+
+    };
+
+
+    // -------------------------
+    // Leads
+    // -------------------------
 
     this.crm.getLeads()
       .subscribe({
 
-        next: (response: any) => {
+        next: (response) => {
 
-          this.leads =
-            response.leads;
+          this.leads.set(
+            response?.leads ?? []
+          );
 
+          leadsLoaded = true;
+
+          finishLoading();
         },
 
-        error: () => {
+        error: (error) => {
 
-          this.error =
-            'Unable to load leads.';
+          console.error(
+            'Dashboard leads error:',
+            error
+          );
 
+          this.error.set(
+            'Unable to load leads.'
+          );
+
+          leadsLoaded = true;
+
+          finishLoading();
         }
 
       });
+
+
+    // -------------------------
+    // System Status
+    // -------------------------
 
     this.crm.getSystemStatus()
       .subscribe({
 
-        next: (response: any) => {
+        next: (response) => {
 
-          this.status =
-            response;
+          this.status.set(
+            response as SystemStatus
+          );
 
-          this.loading =
-            false;
+          statusLoaded = true;
 
+          finishLoading();
         },
 
-        error: () => {
+        error: (error) => {
 
-          this.error =
-            'Unable to load system status.';
+          console.error(
+            'Dashboard status error:',
+            error
+          );
 
-          this.loading =
-            false;
+          this.error.set(
+            'Unable to load system status.'
+          );
 
+          statusLoaded = true;
+
+          finishLoading();
         }
 
       });
 
   }
 
-  get totalLeads(): number {
-    return this.leads.length;
-  }
 
-  get newLeads(): number {
-
-    return this.leads.filter(
-      lead => lead.status === 'new'
-    ).length;
-
-  }
-
-  get qualifiedLeads(): number {
-
-    return this.leads.filter(
-      lead =>
-        lead.status === 'qualified'
-    ).length;
-
-  }
+  // =========================
+  // SERVICE STATUS
+  // =========================
 
   isOnline(
     service: string
   ): boolean {
 
-    return this.status
+    return this.status()
       ?.services?.[service]
       ?.status === 'online';
+
+  }
+
+
+  // =========================
+  // HELPERS
+  // =========================
+
+  getInitials(
+    name?: string
+  ): string {
+
+    if (!name?.trim()) {
+      return '?';
+    }
+
+    const parts =
+      name
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (parts.length === 1) {
+
+      return parts[0]
+        .substring(0, 2)
+        .toUpperCase();
+
+    }
+
+    return (
+      parts[0][0] +
+      parts[parts.length - 1][0]
+    ).toUpperCase();
+
+  }
+
+
+  formatStatus(
+    status?: string
+  ): string {
+
+    if (!status) {
+      return 'Unknown';
+    }
+
+    return status
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(
+        /\b\w/g,
+        char => char.toUpperCase()
+      );
 
   }
 
