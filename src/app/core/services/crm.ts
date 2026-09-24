@@ -50,6 +50,17 @@ getSystemStatus() {
     });
   }
 
+  triggerN8nLead(payload: Partial<Lead>) {
+    return this.http.post<{
+      success: boolean;
+      n8n?: unknown;
+      error?: unknown;
+    }>(
+      `${this.apiUrl}/n8n/lead`,
+      payload,
+    );
+  }
+
   // =========================
   // EMAIL
   // =========================

@@ -1,11 +1,8 @@
 import { Component, OnInit, signal } from "@angular/core";
-
 import { CommonModule } from "@angular/common";
-
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 
 import { CrmService } from "../../../core/services/crm";
-
 import { Lead } from "../../../core/models/crm.models";
 
 @Component({
@@ -16,41 +13,15 @@ import { Lead } from "../../../core/models/crm.models";
   styleUrl: "./lead-detail.scss",
 })
 export class LeadDetailComponent implements OnInit {
-  // --------------------------------------------------
-  // Lead
-  // --------------------------------------------------
-
   readonly lead = signal<Lead | null>(null);
 
   readonly loading = signal(false);
-
   readonly error = signal("");
 
-  // --------------------------------------------------
-  // AI Qualification
-  // --------------------------------------------------
-
   readonly aiLoading = signal(false);
-
   readonly aiError = signal("");
 
-  readonly aiResult = signal<{
-    qualification: string;
-    score: number;
-    reason: string;
-    recommendation: string;
-    model?: string;
-  } | null>(null);
-
-  // --------------------------------------------------
-  // Lead ID
-  // --------------------------------------------------
-
   private leadId = "";
-
-  // --------------------------------------------------
-  // Constructor
-  // --------------------------------------------------
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -58,51 +29,38 @@ export class LeadDetailComponent implements OnInit {
     private readonly crm: CrmService,
   ) {}
 
-  // --------------------------------------------------
-  // Init
-  // --------------------------------------------------
-
   ngOnInit(): void {
     this.leadId = this.route.snapshot.paramMap.get("id") ?? "";
 
     if (!this.leadId) {
       this.error.set("Lead ID is missing.");
-
       return;
     }
 
     this.loadLead();
   }
 
-  // --------------------------------------------------
-  // Load Lead
-  // --------------------------------------------------
-
   loadLead(): void {
     this.loading.set(true);
-
     this.error.set("");
 
     this.crm.getLead(this.leadId).subscribe({
       next: (response) => {
         this.lead.set(response.lead);
-
         this.loading.set(false);
       },
 
       error: (error) => {
         console.error("Lead detail error:", error);
 
-        this.error.set(error?.error?.error || "Unable to load lead.");
+        this.error.set(
+          error?.error?.error || "Unable to load lead.",
+        );
 
         this.loading.set(false);
       },
     });
   }
-
-  // --------------------------------------------------
-  // AI Qualification
-  // --------------------------------------------------
 
   runAiQualification(): void {
     if (!this.leadId) {
@@ -111,17 +69,22 @@ export class LeadDetailComponent implements OnInit {
 
     this.aiLoading.set(true);
     this.aiError.set("");
-    this.aiResult.set(null);
 
     this.crm.qualifyLead(this.leadId).subscribe({
       next: (response) => {
-        this.aiResult.set({
-          qualification: response.qualification,
-          score: response.score,
-          reason: response.reason,
-          recommendation: response.recommendation,
-          model: response.model,
-        });
+        /*
+         * Refresh the lead from MongoDB after AI qualification.
+         *
+         * n8n saves:
+         * qualification
+         * score
+         * summary
+         * nextAction
+         * emailSubject
+         * emailBody
+         */
+
+        this.loadLead();
 
         this.aiLoading.set(false);
       },
@@ -129,24 +92,19 @@ export class LeadDetailComponent implements OnInit {
       error: (error) => {
         console.error("AI qualification error:", error);
 
-        this.aiError.set(error?.error?.error || "Unable to qualify this lead.");
+        this.aiError.set(
+          error?.error?.error ||
+          "Unable to qualify this lead.",
+        );
 
         this.aiLoading.set(false);
       },
     });
   }
 
-  // --------------------------------------------------
-  // Edit Lead
-  // --------------------------------------------------
-
   editLead(): void {
     this.router.navigate(["/leads", this.leadId, "edit"]);
   }
-
-  // --------------------------------------------------
-  // Delete Lead
-  // --------------------------------------------------
 
   deleteLead(): void {
     const currentLead = this.lead();
@@ -171,14 +129,12 @@ export class LeadDetailComponent implements OnInit {
       error: (error) => {
         console.error("Delete lead error:", error);
 
-        this.error.set(error?.error?.error || "Unable to delete lead.");
+        this.error.set(
+          error?.error?.error || "Unable to delete lead.",
+        );
       },
     });
   }
-
-  // --------------------------------------------------
-  // Initials
-  // --------------------------------------------------
 
   getInitials(name?: string): string {
     if (!name?.trim()) {
@@ -191,12 +147,11 @@ export class LeadDetailComponent implements OnInit {
       return parts[0].substring(0, 2).toUpperCase();
     }
 
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return (
+      parts[0][0] +
+      parts[parts.length - 1][0]
+    ).toUpperCase();
   }
-
-  // --------------------------------------------------
-  // Format Status
-  // --------------------------------------------------
 
   formatStatus(status?: string): string {
     if (!status) {
@@ -209,10 +164,6 @@ export class LeadDetailComponent implements OnInit {
       .trim()
       .replace(/\b\w/g, (char) => char.toUpperCase());
   }
-
-  // --------------------------------------------------
-  // Format Date
-  // --------------------------------------------------
 
   formatDate(date?: string | Date): string {
     if (!date) {

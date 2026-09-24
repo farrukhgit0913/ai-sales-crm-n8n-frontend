@@ -434,12 +434,10 @@
 
 
     <!-- =========================
-           AI QUALIFICATION
-           ========================= -->
+     AI QUALIFICATION
+     ========================= -->
 
     <section class="card ai-card full-width">
-
-      <!-- AI HEADER -->
 
       <div class="ai-header">
 
@@ -460,41 +458,39 @@
             </h2>
 
             <p>
-              Analyze this lead using AI to determine
-              purchase intent, lead quality, and the
-              recommended next sales action.
+              AI-powered analysis of purchase intent,
+              lead quality, and recommended sales action.
             </p>
 
           </div>
 
         </div>
 
+        <button type="button" class="ai-button" (click)="runAiQualification()" [disabled]="aiLoading()">
 
-        <!-- AI BUTTON -->
-
-        <button type="button" class="ai-button" (click)="runAiQualification()">
           @if (aiLoading()) {
+
           <span class="button-spinner"></span>
           Analyzing...
+
           } @else {
+
           ✦ Run AI Qualification
+
           }
+
         </button>
 
       </div>
 
 
-      <!-- =========================
-             AI ERROR
-             ========================= -->
+      <!-- AI ERROR -->
 
       @if (aiError()) {
 
       <div class="ai-error">
 
-        <span>
-          !
-        </span>
+        <span>!</span>
 
         {{ aiError() }}
 
@@ -503,73 +499,81 @@
       }
 
 
-      <!-- =========================
-             AI RESULT
-             ========================= -->
+      <!-- AI DATA FROM MONGODB -->
 
-      @if (aiResult(); as result) {
+      @if (
+      currentLead.qualification ||
+      currentLead.score !== undefined
+      ) {
 
       <div class="ai-result">
 
+        <!-- TOP METRICS -->
 
-        <!-- SCORE -->
+        <div class="ai-metrics">
 
-        <div class="score-box">
+          <div class="score-box">
 
-          <span>
-            Lead Score
-          </span>
+            <span>
+              Lead Score
+            </span>
 
-          <strong>
-            {{ result.score }}
-          </strong>
+            <strong>
+              {{ currentLead.score ?? 0 }}
+            </strong>
 
-          <small>
-            / 100
-          </small>
+            <small>
+              / 100
+            </small>
+
+          </div>
+
+
+          <div class="qualification-box">
+
+            <span class="result-label">
+              Qualification
+            </span>
+
+            <span class="qualification" [class.qualified]="
+              currentLead.qualification === 'Qualified'
+            " [class.unqualified]="
+              currentLead.qualification === 'Unqualified'
+            ">
+
+              <span class="qualification-dot"></span>
+
+              {{ currentLead.qualification || "Not analyzed" }}
+
+            </span>
+
+          </div>
 
         </div>
 
 
-        <!-- QUALIFICATION -->
+        <!-- SUMMARY -->
 
-        <div class="qualification-box">
-
-          <span class="result-label">
-            Qualification
-          </span>
-
-          <span class="qualification" [class.qualified]="
-                  result.qualification === 'qualified'
-                " [class.potential]="
-                  result.qualification === 'potential'
-                " [class.unqualified]="
-                  result.qualification === 'unqualified'
-                ">
-
-            {{ result.qualification | titlecase }}
-
-          </span>
-
-        </div>
-
-
-        <!-- AI ANALYSIS -->
+        @if (currentLead.summary) {
 
         <div class="ai-result-section">
 
           <span class="result-label">
-            AI Analysis
+            AI Summary
           </span>
 
           <p>
-            {{ result.reason }}
+            {{ currentLead.summary }}
           </p>
 
         </div>
 
+        }
 
-        <!-- RECOMMENDATION -->
+
+        <!-- NEXT ACTION -->
+
+        @if (currentLead.nextAction) {
 
         <div class="ai-recommendation">
 
@@ -578,32 +582,121 @@
           </span>
 
           <p>
-            {{ result.recommendation }}
+            {{ currentLead.nextAction }}
           </p>
 
         </div>
 
+        }
 
-        <!-- MODEL -->
 
-        @if (result.model) {
+        <!-- GENERATED EMAIL -->
 
-        <div class="ai-model">
+        @if (
+        currentLead.emailSubject ||
+        currentLead.emailBody
+        ) {
 
-          Powered by
-          <strong>
-            {{ result.model }}
-          </strong>
+        <div class="generated-email">
+
+          <div class="generated-email-header">
+
+            <div>
+
+              <span class="result-label">
+                AI Generated Email
+              </span>
+
+              <h3>
+                Follow-up Message
+              </h3>
+
+            </div>
+
+            <a class="mailpit-link" href="http://localhost:8025" target="_blank" rel="noopener">
+              Open Mailpit
+            </a>
+
+          </div>
+
+
+          @if (currentLead.emailSubject) {
+
+          <div class="email-field">
+
+            <span>
+              Subject
+            </span>
+
+            <strong>
+              {{ currentLead.emailSubject }}
+            </strong>
+
+          </div>
+
+          }
+
+
+          @if (currentLead.emailBody) {
+
+          <div class="email-field">
+
+            <span>
+              Message
+            </span>
+
+            <div class="email-body">
+              {{ currentLead.emailBody }}
+            </div>
+
+          </div>
+
+          }
 
         </div>
 
         }
+
+
+        <!-- MODEL -->
+
+        <div class="ai-model">
+
+          AI analysis generated by
+          <strong>
+            Qwen3
+          </strong>
+
+        </div>
+
+      </div>
+
+      } @else {
+
+      <!-- NOT ANALYZED -->
+
+      <div class="ai-empty">
+
+        <div class="ai-empty-icon">
+          ✦
+        </div>
+
+        <h3>
+          This lead hasn't been analyzed yet
+        </h3>
+
+        <p>
+          Run AI Qualification to analyze this lead
+          and generate a recommended next action.
+        </p>
 
       </div>
 
       }
 
     </section>
+    ```
+
 
   </div>
 

@@ -1,7 +1,4 @@
-import {
-  Component,
-  signal
-} from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,16 +10,11 @@ import { Lead } from '../../../core/models/crm.models';
 @Component({
   selector: 'app-lead-create',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterLink
-  ],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './lead-create.html',
-  styleUrl: './lead-create.scss'
+  styleUrl: './lead-create.scss',
 })
 export class LeadCreateComponent {
-
   readonly saving = signal(false);
   readonly error = signal('');
   readonly success = signal('');
@@ -37,7 +29,7 @@ export class LeadCreateComponent {
 
   constructor(
     private readonly crm: CrmService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   createLead(): void {
@@ -61,7 +53,7 @@ export class LeadCreateComponent {
       phone: this.phone().trim(),
       budget: this.budget() ?? undefined,
       status: this.status(),
-      requirement: this.requirement().trim()
+      requirement: this.requirement().trim(),
     };
 
     this.saving.set(true);
@@ -72,29 +64,65 @@ export class LeadCreateComponent {
       next: (response) => {
         console.log('Lead created:', response);
 
-        this.saving.set(false);
-        this.success.set('Lead created successfully.');
+        const lead = response?.lead;
+        const leadId = lead?._id;
 
-        const leadId = response?.lead?._id;
-
-        if (leadId) {
-          setTimeout(() => {
-            this.router.navigate([
-              '/leads',
-              leadId
-            ]);
-          }, 500);
+        if (!leadId) {
+          this.saving.set(false);
+          this.error.set('Lead was created but no lead ID was returned.');
+          return;
         }
+
+        /*
+         * Trigger AI workflow after MongoDB creation.
+         *
+         * IMPORTANT:
+         * Send the MongoDB-generated _id to n8n.
+         */
+        const n8nPayload: Partial<Lead> = {
+          ...lead,
+          _id: leadId,
+        };
+
+        console.log('Triggering n8n AI workflow:', n8nPayload);
+
+        this.crm.triggerN8nLead(n8nPayload).subscribe({
+          next: (n8nResponse) => {
+            console.log('n8n workflow completed:', n8nResponse);
+
+            this.saving.set(false);
+            this.success.set('Lead created and AI analysis completed successfully.');
+
+            setTimeout(() => {
+              this.router.navigate(['/leads', leadId]);
+            }, 700);
+          },
+
+          error: (error) => {
+            console.error('n8n workflow error:', error);
+
+            /*
+             * The lead already exists in MongoDB.
+             * Do not tell the user that lead creation failed.
+             */
+            this.saving.set(false);
+
+            this.success.set('Lead created successfully, but AI analysis could not be completed.');
+
+            setTimeout(() => {
+              this.router.navigate(['/leads', leadId]);
+            }, 1000);
+          },
+        });
       },
 
       error: (error: unknown) => {
         console.error('Create lead error:', error);
 
         this.saving.set(false);
-        this.error.set(
-          this.getErrorMessage(error)
-        );
-      }
+
+        this.error.set(this.getErrorMessage(error));
+      },
     });
   }
 
@@ -102,10 +130,7 @@ export class LeadCreateComponent {
     this.router.navigate(['/leads']);
   }
 
-  private getErrorMessage(
-    error: unknown
-  ): string {
-
+  private getErrorMessage(error: unknown): string {
     if (!error) {
       return 'Unable to create lead.';
     }
@@ -123,19 +148,11 @@ export class LeadCreateComponent {
         };
       };
 
-      if (
-        apiError.error &&
-        typeof apiError.error === 'object' &&
-        apiError.error.message
-      ) {
+      if (apiError.error && typeof apiError.error === 'object' && apiError.error.message) {
         return apiError.error.message;
       }
 
-      if (
-        apiError.error &&
-        typeof apiError.error === 'object' &&
-        apiError.error.error
-      ) {
+      if (apiError.error && typeof apiError.error === 'object' && apiError.error.error) {
         return apiError.error.error;
       }
 
