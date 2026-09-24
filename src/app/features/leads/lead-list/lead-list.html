@@ -7,10 +7,7 @@
       <p>Manage and track your sales leads.</p>
     </div>
 
-    <a
-      routerLink="/leads/new"
-      class="primary-btn"
-    >
+    <a routerLink="/leads/new" class="primary-btn">
       + New Lead
     </a>
   </div>
@@ -22,20 +19,12 @@
     <div class="search-box">
       <span class="search-icon">⌕</span>
 
-      <input
-        type="text"
-        placeholder="Search name, company, email or phone..."
-        [value]="searchTerm()"
-        (input)="onSearch($event)"
-      />
+      <input type="text" placeholder="Search name, company, email or phone..." [value]="searchTerm()"
+        (input)="onSearch($event)" />
     </div>
 
 
-    <select
-      class="filter-select"
-      [value]="statusFilter()"
-      (change)="onStatusChange($event)"
-    >
+    <select class="filter-select" [value]="statusFilter()" (change)="onStatusChange($event)">
       <option value="all">All Statuses</option>
       <option value="new">New</option>
       <option value="contacted">Contacted</option>
@@ -47,33 +36,22 @@
     </select>
 
 
-    <select
-      class="filter-select"
-      [value]="sourceFilter()"
-      (change)="onSourceChange($event)"
-    >
+    <select class="filter-select" [value]="sourceFilter()" (change)="onSourceChange($event)">
       <option value="all">All Sources</option>
 
       @for (source of availableSources(); track source) {
-        <option
-          [value]="source.toLowerCase()"
-        >
-          {{ formatStatus(source) }}
-        </option>
+      <option [value]="source.toLowerCase()">
+        {{ formatStatus(source) }}
+      </option>
       }
     </select>
 
 
-    <button
-      type="button"
-      class="clear-btn"
-      (click)="clearFilters()"
-      [disabled]="
+    <button type="button" class="clear-btn" (click)="clearFilters()" [disabled]="
         !searchTerm() &&
         statusFilter() === 'all' &&
         sourceFilter() === 'all'
-      "
-    >
+      ">
       Clear
     </button>
 
@@ -88,215 +66,222 @@
     </span>
 
     @if (
-      searchTerm() ||
-      statusFilter() !== "all" ||
-      sourceFilter() !== "all"
+    searchTerm() ||
+    statusFilter() !== "all" ||
+    sourceFilter() !== "all"
     ) {
-      <span class="filtered-label">
-        Filtered results
-      </span>
+    <span class="filtered-label">
+      Filtered results
+    </span>
     }
   </div>
 
 
   <!-- Error -->
   @if (error()) {
-    <div class="error-message">
-      {{ error() }}
-    </div>
+  <div class="error-message">
+    {{ error() }}
+  </div>
   }
 
 
   <!-- Loading -->
   @if (loading()) {
 
-    <div class="empty-state">
-      Loading leads...
-    </div>
+  <div class="empty-state">
+    Loading leads...
+  </div>
 
   } @else if (filteredLeads().length === 0) {
 
-    <div class="empty-state">
+  <div class="empty-state">
 
-      <div class="empty-icon">
-        ◌
-      </div>
-
-      <h3>No leads found</h3>
-
-      <p>
-        Try changing your search or filters.
-      </p>
-
-      <button
-        type="button"
-        class="secondary-btn"
-        (click)="clearFilters()"
-      >
-        Clear Filters
-      </button>
-
+    <div class="empty-icon">
+      ◌
     </div>
+
+    <h3>No leads found</h3>
+
+    <p>
+      Try changing your search or filters.
+    </p>
+
+    <button type="button" class="secondary-btn" (click)="clearFilters()">
+      Clear Filters
+    </button>
+
+  </div>
 
   } @else {
 
-    <!-- Leads table -->
-    <div class="table-card">
+  <!-- Leads table -->
+  <div class="table-card">
 
-      <table>
+    <table>
 
-        <thead>
-          <tr>
-            <th>Lead</th>
-            <th>Company</th>
-            <th>Contact</th>
-            <th>Budget</th>
-            <th>Status</th>
-            <th>Source</th>
-            <th></th>
-          </tr>
-        </thead>
+      <thead>
+        <tr>
+          <th>Lead</th>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>Budget</th>
+          <th>AI Qualification</th>
+          <th>Status</th>
+          <th>Source</th>
+          <th></th>
+        </tr>
+      </thead>
 
-        <tbody>
+      <tbody>
 
-          @for (
-            lead of filteredLeads();
-            track lead._id
-          ) {
+        @for (
+        lead of filteredLeads();
+        track lead._id
+        ) {
 
-            <tr>
+        <tr>
 
-              <!-- Lead -->
-              <td>
-                <a
-                  class="lead-name"
-                  [routerLink]="['/leads', lead._id]"
-                >
+          <!-- Lead -->
+          <td>
+            <a class="lead-name" [routerLink]="['/leads', lead._id]">
 
-                  <span class="avatar">
-                    {{ getInitials(lead.name) }}
-                  </span>
+              <span class="avatar">
+                {{ getInitials(lead.name) }}
+              </span>
 
-                  <span>
-                    <strong>
-                      {{ lead.name || "Unnamed Lead" }}
-                    </strong>
+              <span>
+                <strong>
+                  {{ lead.name || "Unnamed Lead" }}
+                </strong>
 
-                    <small>
-                      {{ lead.email || "No email" }}
-                    </small>
-                  </span>
+                <small>
+                  {{ lead.email || "No email" }}
+                </small>
+              </span>
 
-                </a>
-              </td>
+            </a>
+          </td>
 
 
-              <!-- Company -->
-              <td>
-                <span class="company-name">
-                  {{ lead.company || "—" }}
-                </span>
-              </td>
+          <!-- Company -->
+          <td>
+            <span class="company-name">
+              {{ lead.company || "—" }}
+            </span>
+          </td>
 
 
-              <!-- Contact -->
-              <td>
-                <div class="contact-info">
+          <!-- Contact -->
+          <td>
+            <div class="contact-info">
 
-                  @if (lead.email) {
-                    <span>
-                      {{ lead.email }}
-                    </span>
-                  }
+              @if (lead.email) {
+              <span>
+                {{ lead.email }}
+              </span>
+              }
 
-                  @if (lead.phone) {
-                    <small>
-                      {{ lead.phone }}
-                    </small>
-                  }
+              @if (lead.phone) {
+              <small>
+                {{ lead.phone }}
+              </small>
+              }
 
-                  @if (!lead.email && !lead.phone) {
-                    <span>—</span>
-                  }
+              @if (!lead.email && !lead.phone) {
+              <span>—</span>
+              }
 
-                </div>
-              </td>
-
-
-              <!-- Budget -->
-              <td>
-                @if (lead.budget !== undefined && lead.budget !== null) {
-                  ${{ lead.budget | number }}
-                } @else {
-                  —
-                }
-              </td>
+            </div>
+          </td>
 
 
-              <!-- Status -->
-              <td>
-                <span
-                  class="status-badge"
-                  [class]="'status-' + (lead.status || 'new').toLowerCase()"
-                >
-                  {{ formatStatus(lead.status) }}
-                </span>
-              </td>
+          <!-- Budget -->
+          <td>
+            @if (lead.budget !== undefined && lead.budget !== null) {
+            ${{ lead.budget | number }}
+            } @else {
+            —
+            }
+          </td>
+
+          <!-- AI Qualification -->
+          <td>
+            @if (lead.qualification) {
+
+            <div class="ai-qualification">
+
+              <span class="ai-badge" [class.ai-qualified]="lead.qualification === 'Qualified'"
+                [class.ai-unqualified]="lead.qualification === 'Unqualified'">
+                <span class="ai-dot"></span>
+
+                {{ lead.qualification }}
+              </span>
+
+              @if (lead.score !== undefined) {
+              <span class="ai-score">
+                Score {{ lead.score }}
+              </span>
+              }
+
+            </div>
+
+            } @else {
+
+            <span class="ai-pending">
+              Not analyzed
+            </span>
+
+            }
+          </td>
+
+          <!-- Status -->
+          <td>
+            <span class="status-badge" [class]="'status-' + (lead.status || 'new').toLowerCase()">
+              {{ formatStatus(lead.status) }}
+            </span>
+          </td>
 
 
-              <!-- Source -->
-              <td>
-                <span class="source-text">
-                  {{ formatStatus(lead.source) }}
-                </span>
-              </td>
+          <!-- Source -->
+          <td>
+            <span class="source-text">
+              {{ formatStatus(lead.source) }}
+            </span>
+          </td>
 
 
-              <!-- Actions -->
-              <td>
-                <div class="actions">
+          <!-- Actions -->
+          <td>
+            <div class="actions">
 
-                  <a
-                    class="action-btn"
-                    [routerLink]="['/leads', lead._id]"
-                    title="View lead"
-                  >
-                    View
-                  </a>
+              <a class="action-btn" [routerLink]="['/leads', lead._id]" title="View lead">
+                View
+              </a>
 
-                  <a
-                    class="action-btn"
-                    [routerLink]="[
+              <a class="action-btn" [routerLink]="[
                       '/leads',
                       lead._id,
                       'edit'
-                    ]"
-                    title="Edit lead"
-                  >
-                    Edit
-                  </a>
+                    ]" title="Edit lead">
+                Edit
+              </a>
 
-                  <button
-                    type="button"
-                    class="action-btn danger"
-                    (click)="deleteLead(lead._id)"
-                    title="Delete lead"
-                  >
-                    Delete
-                  </button>
+              <button type="button" class="action-btn danger" (click)="deleteLead(lead._id)" title="Delete lead">
+                Delete
+              </button>
 
-                </div>
-              </td>
+            </div>
+          </td>
 
-            </tr>
+        </tr>
 
-          }
+        }
 
-        </tbody>
+      </tbody>
 
-      </table>
+    </table>
 
-    </div>
+  </div>
 
   }
 
