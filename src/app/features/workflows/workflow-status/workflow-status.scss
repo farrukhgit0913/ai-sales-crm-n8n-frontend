@@ -1,0 +1,310 @@
+.workflow-page {
+  padding: 28px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #6b7280;
+  }
+}
+
+.refresh-btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.summary-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  font-size: 22px;
+}
+
+.summary-content {
+  flex: 1;
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+.summary-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.section {
+  margin-bottom: 36px;
+}
+
+.section-header {
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  );
+  gap: 16px;
+}
+
+.service-card {
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+
+  h3 {
+    margin: 15px 0 5px;
+    font-size: 15px;
+  }
+
+  p {
+    margin: 0 0 8px;
+    color: #6b7280;
+    font-size: 13px;
+  }
+
+  small {
+    color: #6b7280;
+    font-size: 12px;
+  }
+}
+
+.service-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.service-icon,
+.workflow-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  font-size: 19px;
+}
+
+.status-badge,
+.active-badge,
+.planned-badge {
+  display: inline-flex;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-badge.online,
+.active-badge {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.offline {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.planned-badge {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.service-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.workflow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.workflow-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.workflow-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.workflow-card {
+  h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+.workflow-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+  font-size: 11px;
+
+  span:not(.arrow) {
+    padding: 5px 9px;
+    border-radius: 6px;
+    background: #f3f4f6;
+  }
+}
+
+.arrow {
+  color: #9ca3af;
+}
+
+.workflow-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.open-btn {
+  padding: 8px 13px;
+  border-radius: 7px;
+  background: #111827;
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.loading-card,
+.error-card {
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.error-card {
+  margin-bottom: 20px;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+@media (max-width: 700px) {
+
+  .workflow-page {
+    padding: 18px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .summary-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .summary-status {
+    width: 100%;
+  }
+
+  .workflow-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .workflow-actions {
+    width: 100%;
+  }
+}

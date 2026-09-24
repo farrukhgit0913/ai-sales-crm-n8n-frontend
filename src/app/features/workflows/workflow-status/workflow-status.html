@@ -1,1 +1,596 @@
-<p>workflow-status works!</p>
+<div class="workflow-page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+
+    <div>
+      <h1>Workflows</h1>
+
+      <p>
+        Monitor AI sales automation and connected services.
+      </p>
+    </div>
+
+    <button
+      class="refresh-btn"
+      type="button"
+      (click)="loadStatus()"
+      [disabled]="loading()"
+    >
+      {{ loading() ? 'Refreshing...' : 'Refresh' }}
+    </button>
+
+  </div>
+
+
+  <!-- ERROR -->
+  @if (error()) {
+    <div class="error-card">
+      {{ error() }}
+    </div>
+  }
+
+
+  <!-- LOADING -->
+  @if (loading() && !status()) {
+
+    <div class="loading-card">
+      Loading system status...
+    </div>
+
+  }
+
+
+  @if (status(); as system) {
+
+    <!-- SUMMARY -->
+    <section class="summary-card">
+
+      <div class="summary-icon">
+        ⚙️
+      </div>
+
+      <div class="summary-content">
+
+        <h2>
+          Automation System
+        </h2>
+
+        <p>
+          {{ system.summary.online }}
+          of
+          {{ system.summary.total }}
+          services online
+        </p>
+
+      </div>
+
+      <div class="summary-status">
+        <span class="online-dot"></span>
+        All Systems Operational
+      </div>
+
+    </section>
+
+
+    <!-- SERVICES -->
+    <section class="section">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Connected Services</h2>
+
+          <p>
+            Infrastructure powering the AI Sales CRM.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="services-grid">
+
+
+        <!-- BACKEND -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              ⚡
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('backend')"
+              [class.offline]="!isOnline('backend')"
+            >
+              {{ isOnline('backend') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            {{ system.services.backend.name }}
+          </h3>
+
+          <p>
+            {{ system.services.backend.description }}
+          </p>
+
+        </div>
+
+
+        <!-- MONGODB -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              🗄️
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('mongodb')"
+              [class.offline]="!isOnline('mongodb')"
+            >
+              {{ isOnline('mongodb') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            {{ system.services.mongodb.name }}
+          </h3>
+
+          <p>
+            {{ system.services.mongodb.description }}
+          </p>
+
+          <small>
+            {{ system.services.mongodb.database }}
+          </small>
+
+        </div>
+
+
+        <!-- N8N -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              ⚙️
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('n8n')"
+              [class.offline]="!isOnline('n8n')"
+            >
+              {{ isOnline('n8n') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            {{ system.services.n8n.name }}
+          </h3>
+
+          <p>
+            {{ system.services.n8n.description }}
+          </p>
+
+          <a
+            class="service-link"
+            [href]="system.services.n8n.url"
+            target="_blank"
+            rel="noopener"
+          >
+            Open n8n →
+          </a>
+
+        </div>
+
+
+        <!-- OLLAMA -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              🧠
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('ollama')"
+              [class.offline]="!isOnline('ollama')"
+            >
+              {{ isOnline('ollama') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            {{ system.services.ollama.name }}
+          </h3>
+
+          <p>
+            {{ system.services.ollama.description }}
+          </p>
+
+          <small>
+            Model: {{ system.services.ollama.model }}
+          </small>
+
+        </div>
+
+
+        <!-- QWEN3 -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              🤖
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('qwen3')"
+              [class.offline]="!isOnline('qwen3')"
+            >
+              {{ isOnline('qwen3') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            {{ system.services.qwen3.name }}
+          </h3>
+
+          <p>
+            {{ system.services.qwen3.description }}
+          </p>
+
+          <small>
+            {{ system.services.qwen3.model }}
+          </small>
+
+        </div>
+
+
+        <!-- MAILPIT -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              ✉️
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('mailpit')"
+              [class.offline]="!isOnline('mailpit')"
+            >
+              {{ isOnline('mailpit') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            {{ system.services.mailpit.name }}
+          </h3>
+
+          <p>
+            {{ system.services.mailpit.description }}
+          </p>
+
+          <a
+            class="service-link"
+            [href]="system.services.mailpit.url"
+            target="_blank"
+            rel="noopener"
+          >
+            Open Mailpit →
+          </a>
+
+        </div>
+
+
+        <!-- WEBHOOK -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              🔗
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('webhook')"
+              [class.offline]="!isOnline('webhook')"
+            >
+              {{ isOnline('webhook') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            Lead Webhook
+          </h3>
+
+          <p>
+            {{ system.services.webhook.description }}
+          </p>
+
+        </div>
+
+
+        <!-- AI TEST -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              ✨
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('aiTest')"
+              [class.offline]="!isOnline('aiTest')"
+            >
+              {{ isOnline('aiTest') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            AI Generation Test
+          </h3>
+
+          <p>
+            {{ system.services.aiTest.description }}
+          </p>
+
+        </div>
+
+
+        <!-- EMAIL TEST -->
+
+        <div class="service-card">
+
+          <div class="service-top">
+
+            <div class="service-icon">
+              📧
+            </div>
+
+            <span
+              class="status-badge"
+              [class.online]="isOnline('emailTest')"
+              [class.offline]="!isOnline('emailTest')"
+            >
+              {{ isOnline('emailTest') ? 'Online' : 'Offline' }}
+            </span>
+
+          </div>
+
+          <h3>
+            Email Delivery Test
+          </h3>
+
+          <p>
+            {{ system.services.emailTest.description }}
+          </p>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+    <!-- N8N WORKFLOWS -->
+    <section class="section">
+
+      <div class="section-header">
+
+        <div>
+          <h2>AI Sales Automation</h2>
+
+          <p>
+            Workflows configured for the sales pipeline.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="workflow-list">
+
+
+        <!-- LEAD QUALIFICATION -->
+
+        <div class="workflow-card">
+
+          <div class="workflow-main">
+
+            <div class="workflow-icon">
+              🤖
+            </div>
+
+            <div>
+
+              <h3>
+                AI Sales Lead Qualification
+              </h3>
+
+              <p>
+                Analyzes incoming leads with Qwen3 and
+                assigns a qualification score.
+              </p>
+
+              <div class="workflow-flow">
+
+                <span>New Lead</span>
+
+                <span class="arrow">→</span>
+
+                <span>Qwen3</span>
+
+                <span class="arrow">→</span>
+
+                <span>Score</span>
+
+                <span class="arrow">→</span>
+
+                <span>MongoDB</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="workflow-actions">
+
+            <span class="active-badge">
+              Active
+            </span>
+
+            <a
+              class="open-btn"
+              href="http://localhost:5678"
+              target="_blank"
+              rel="noopener"
+            >
+              Open n8n
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <!-- SALES NOTIFICATION -->
+
+        <div class="workflow-card">
+
+          <div class="workflow-main">
+
+            <div class="workflow-icon">
+              🔔
+            </div>
+
+            <div>
+
+              <h3>
+                Sales Notification
+              </h3>
+
+              <p>
+                Handles qualified leads and prepares
+                sales notifications.
+              </p>
+
+              <div class="workflow-flow">
+
+                <span>Qualified</span>
+
+                <span class="arrow">→</span>
+
+                <span>Notification</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="workflow-actions">
+
+            <span class="active-badge">
+              Active
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <div class="workflow-card">
+
+          <div class="workflow-main">
+
+            <div class="workflow-icon">
+              ✉️
+            </div>
+
+            <div>
+
+              <h3>
+                AI Email Follow-up
+              </h3>
+
+              <p>
+                Generates personalized follow-up emails
+                based on AI lead analysis.
+              </p>
+
+              <div class="workflow-flow">
+
+                <span>Lead</span>
+
+                <span class="arrow">→</span>
+
+                <span>Qwen3</span>
+
+                <span class="arrow">→</span>
+
+                <span>Email</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="workflow-actions">
+
+            <span class="planned-badge">
+              Demo
+            </span>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+  }
+
+</div>

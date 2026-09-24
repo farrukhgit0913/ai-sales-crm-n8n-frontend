@@ -20,6 +20,18 @@ export interface Lead {
 
   source: string;
 
+  qualification?: 'Qualified' | 'Unqualified';
+
+  score?: number;
+
+  summary?: string;
+
+  nextAction?: string;
+
+  emailSubject?: string;
+
+  emailBody?: string;
+
   createdAt?: string;
 
   updatedAt?: string;
