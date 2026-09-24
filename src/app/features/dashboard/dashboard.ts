@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
   readonly qualifiedLeads = computed(() => {
     return this.leads().filter(
       lead =>
-        lead.status?.toLowerCase() === 'qualified'
+        lead.qualification?.toLowerCase() === 'qualified'
     ).length;
   });
 
