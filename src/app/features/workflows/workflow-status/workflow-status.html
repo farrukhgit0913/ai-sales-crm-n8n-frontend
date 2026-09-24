@@ -113,11 +113,11 @@
           </div>
 
           <h3>
-            {{ system.services.backend.name }}
+            {{ system.services['backend'].name }}
           </h3>
 
           <p>
-            {{ system.services.backend.description }}
+            {{ system.services['backend'].description }}
           </p>
 
         </div>
@@ -144,15 +144,15 @@
           </div>
 
           <h3>
-            {{ system.services.mongodb.name }}
+            {{ system.services['mongodb'].name }}
           </h3>
 
           <p>
-            {{ system.services.mongodb.description }}
+            {{ system.services['mongodb'].description }}
           </p>
 
           <small>
-            {{ system.services.mongodb.database }}
+            {{ system.services['mongodb'].database }}
           </small>
 
         </div>
@@ -179,16 +179,16 @@
           </div>
 
           <h3>
-            {{ system.services.n8n.name }}
+            {{ system.services['n8n'].name }}
           </h3>
 
           <p>
-            {{ system.services.n8n.description }}
+            {{ system.services['n8n'].description }}
           </p>
 
           <a
             class="service-link"
-            [href]="system.services.n8n.url"
+            [href]="system.services['n8n'].url"
             target="_blank"
             rel="noopener"
           >
@@ -219,15 +219,15 @@
           </div>
 
           <h3>
-            {{ system.services.ollama.name }}
+            {{ system.services['ollama'].name }}
           </h3>
 
           <p>
-            {{ system.services.ollama.description }}
+            {{ system.services['ollama'].description }}
           </p>
 
           <small>
-            Model: {{ system.services.ollama.model }}
+            Model: {{ system.services['ollama'].model }}
           </small>
 
         </div>
@@ -254,15 +254,15 @@
           </div>
 
           <h3>
-            {{ system.services.qwen3.name }}
+            {{ system.services['qwen3'].name }}
           </h3>
 
           <p>
-            {{ system.services.qwen3.description }}
+            {{ system.services['qwen3'].description }}
           </p>
 
           <small>
-            {{ system.services.qwen3.model }}
+            {{ system.services['qwen3'].model }}
           </small>
 
         </div>
@@ -289,16 +289,16 @@
           </div>
 
           <h3>
-            {{ system.services.mailpit.name }}
+            {{ system.services['mailpit'].name }}
           </h3>
 
           <p>
-            {{ system.services.mailpit.description }}
+            {{ system.services['mailpit'].description }}
           </p>
 
           <a
             class="service-link"
-            [href]="system.services.mailpit.url"
+            [href]="system.services['mailpit'].url"
             target="_blank"
             rel="noopener"
           >
@@ -333,7 +333,7 @@
           </h3>
 
           <p>
-            {{ system.services.webhook.description }}
+            {{ system.services['webhook'].description }}
           </p>
 
         </div>
@@ -364,7 +364,7 @@
           </h3>
 
           <p>
-            {{ system.services.aiTest.description }}
+            {{ system.services['aiTest'].description }}
           </p>
 
         </div>
@@ -395,7 +395,7 @@
           </h3>
 
           <p>
-            {{ system.services.emailTest.description }}
+            {{ system.services['emailTest'].description }}
           </p>
 
         </div>
