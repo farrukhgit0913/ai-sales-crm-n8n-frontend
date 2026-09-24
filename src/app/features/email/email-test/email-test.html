@@ -1,54 +1,287 @@
-<div class="page">
+<div class="email-test-page">
 
-  <h1>Email Test</h1>
+  <!-- Header -->
+  <div class="page-header">
 
-  <p>
-    Send a test email through Mailpit.
-  </p>
+    <div class="header-content">
+      <div class="header-icon">
+        ✉
+      </div>
 
-  <div class="panel">
+      <div>
+        <h1>Email Testing</h1>
 
-    <label>To</label>
+        <p>
+          Send test emails through your local Mailpit environment.
+        </p>
+      </div>
+    </div>
 
-    <input
-      [(ngModel)]="to"
-      type="email"
-    >
-
-    <label>Subject</label>
-
-    <input
-      [(ngModel)]="subject"
-    >
-
-    <label>Message</label>
-
-    <textarea
-      [(ngModel)]="text"
-      rows="8"
-    ></textarea>
-
-    <button
-      (click)="sendEmail()"
-      [disabled]="sending"
-    >
-      {{ sending ? 'Sending...' : 'Send Test Email' }}
-    </button>
+    <div class="mailpit-status">
+      <span class="status-dot"></span>
+      Mailpit Connected
+    </div>
 
   </div>
 
-  <div
-    *ngIf="success"
-    class="success"
-  >
-    ✓ {{ success }}
+
+  <!-- Main Content -->
+  <div class="content-grid">
+
+    <!-- Email Form -->
+    <section class="email-card">
+
+      <div class="card-header">
+
+        <div>
+          <h2>Send Test Email</h2>
+
+          <p>
+            Verify email delivery before enabling automated
+            sales notifications.
+          </p>
+        </div>
+
+        <div class="card-icon">
+          📤
+        </div>
+
+      </div>
+
+
+      <div class="form-body">
+
+        <!-- To -->
+        <div class="form-group">
+
+          <label for="email-to">
+            Recipient
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+              👤
+            </span>
+
+            <input
+              id="email-to"
+              [(ngModel)]="to"
+              type="email"
+              placeholder="recipient@example.com"
+              autocomplete="email"
+            >
+
+          </div>
+
+          <span class="field-hint">
+            Email address that will receive the test message.
+          </span>
+
+        </div>
+
+
+        <!-- Subject -->
+        <div class="form-group">
+
+          <label for="email-subject">
+            Subject
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+              #
+            </span>
+
+            <input
+              id="email-subject"
+              [(ngModel)]="subject"
+              type="text"
+              placeholder="Email subject"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- Message -->
+        <div class="form-group">
+
+          <label for="email-message">
+            Message
+          </label>
+
+          <textarea
+            id="email-message"
+            [(ngModel)]="text"
+            rows="8"
+            placeholder="Write your test email message..."
+          ></textarea>
+
+          <span class="field-hint">
+            This message will be delivered to Mailpit.
+          </span>
+
+        </div>
+
+
+        <!-- Actions -->
+        <div class="form-actions">
+
+          <button
+            class="send-button"
+            type="button"
+            (click)="sendEmail()"
+            [disabled]="sending"
+          >
+
+            @if (sending) {
+              <span class="spinner"></span>
+              Sending...
+            } @else {
+              <span>✈</span>
+              Send Test Email
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Mailpit Information -->
+    <aside class="info-column">
+
+      <div class="info-card">
+
+        <div class="info-icon">
+          📨
+        </div>
+
+        <h3>Mailpit</h3>
+
+        <p>
+          Your emails are captured locally by Mailpit,
+          so no real emails are sent to external recipients.
+        </p>
+
+        <a
+          href="http://localhost:8025"
+          target="_blank"
+          rel="noopener"
+          class="mailpit-button"
+        >
+          Open Mailpit
+          <span>↗</span>
+        </a>
+
+      </div>
+
+
+      <div class="info-card flow-card">
+
+        <h3>Email Flow</h3>
+
+        <div class="flow-step">
+
+          <div class="step-number">
+            1
+          </div>
+
+          <div>
+            <strong>CRM</strong>
+            <span>Create test email</span>
+          </div>
+
+        </div>
+
+
+        <div class="flow-line"></div>
+
+
+        <div class="flow-step">
+
+          <div class="step-number">
+            2
+          </div>
+
+          <div>
+            <strong>SMTP</strong>
+            <span>Send through Mailpit</span>
+          </div>
+
+        </div>
+
+
+        <div class="flow-line"></div>
+
+
+        <div class="flow-step">
+
+          <div class="step-number">
+            3
+          </div>
+
+          <div>
+            <strong>Mailpit</strong>
+            <span>View received email</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </aside>
+
   </div>
 
-  <div
-    *ngIf="error"
-    class="error"
-  >
-    {{ error }}
-  </div>
+
+  <!-- Success -->
+  @if (success) {
+
+    <div class="result-message success">
+
+      <div class="result-icon">
+        ✓
+      </div>
+
+      <div>
+        <strong>Email Sent Successfully</strong>
+
+        <span>
+          {{ success }}
+        </span>
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- Error -->
+  @if (error) {
+
+    <div class="result-message error">
+
+      <div class="result-icon">
+        !
+      </div>
+
+      <div>
+        <strong>Email Test Failed</strong>
+
+        <span>
+          {{ error }}
+        </span>
+      </div>
+
+    </div>
+
+  }
 
 </div>
