@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  computed,
   signal
 } from '@angular/core';
 
@@ -40,6 +41,45 @@ export class WorkflowStatusComponent
 
   readonly error =
     signal('');
+
+
+  // =========================
+  // COMPUTED SERVICE COUNTS
+  // =========================
+
+  readonly onlineServices = computed(() => {
+
+    const services =
+      this.status()?.services ?? {};
+
+    return Object.values(services).filter(
+      (service: any) =>
+        [
+          'online',
+          'connected',
+          'ready',
+          'passed',
+          'active',
+          'working',
+          'configured',
+          'healthy',
+          'success'
+        ].includes(
+          String(service?.status || '').toLowerCase()
+        )
+    ).length;
+
+  });
+
+
+  readonly totalServices = computed(() => {
+
+    const services =
+      this.status()?.services ?? {};
+
+    return Object.keys(services).length;
+
+  });
 
 
   // =========================
@@ -109,9 +149,24 @@ export class WorkflowStatusComponent
     service: string
   ): boolean {
 
-    return this.status()
-      ?.services?.[service]
-      ?.status === 'online';
+    const status =
+      this.status()
+        ?.services?.[service]
+        ?.status;
+
+    return [
+      'online',
+      'connected',
+      'ready',
+      'passed',
+      'active',
+      'working',
+      'configured',
+      'healthy',
+      'success'
+    ].includes(
+      String(status || '').toLowerCase()
+    );
 
   }
 

@@ -1,54 +1,32 @@
-import {
-  Component,
-  OnInit,
-  computed,
-  signal
-} from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 
-import {
-  CommonModule
-} from '@angular/common';
+import { CommonModule } from '@angular/common';
 
-import {
-  RouterLink
-} from '@angular/router';
+import { RouterLink } from '@angular/router';
 
-import {
-  CrmService
-} from '../../core/services/crm';
+import { CrmService } from '../../core/services/crm';
 
-import {
-  Lead,
-  SystemStatus
-} from '../../core/models/crm.models';
+import { Lead, SystemStatus } from '../../core/models/crm.models';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink
-  ],
+  imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+  styleUrl: './dashboard.scss',
 })
 export class DashboardComponent implements OnInit {
-
   // =========================
   // STATE
   // =========================
 
   readonly leads = signal<Lead[]>([]);
 
-  readonly status =
-    signal<SystemStatus | null>(null);
+  readonly status = signal<SystemStatus | null>(null);
 
-  readonly loading =
-    signal(false);
+  readonly loading = signal(false);
 
-  readonly error =
-    signal('');
-
+  readonly error = signal('');
 
   // =========================
   // COMPUTED
@@ -58,59 +36,53 @@ export class DashboardComponent implements OnInit {
     return this.leads().length;
   });
 
-
   readonly newLeads = computed(() => {
-    return this.leads().filter(
-      lead =>
-        lead.status?.toLowerCase() === 'new'
-    ).length;
+    return this.leads().filter((lead) => lead.status?.toLowerCase() === 'new').length;
   });
-
 
   readonly qualifiedLeads = computed(() => {
-    return this.leads().filter(
-      lead =>
-        lead.qualification?.toLowerCase() === 'qualified'
-    ).length;
+    return this.leads().filter((lead) => lead.qualification?.toLowerCase() === 'qualified').length;
   });
-
 
   readonly recentLeads = computed(() => {
     return this.leads().slice(0, 6);
   });
 
-
   readonly onlineServices = computed(() => {
-    return this.status()
-      ?.summary
-      ?.online ?? 0;
-  });
+    const services = this.status()?.services ?? {};
 
+    return Object.values(services).filter((service: any) =>
+      [
+        'online',
+        'connected',
+        'ready',
+        'passed',
+        'active',
+        'working',
+        'configured',
+        'healthy',
+        'success',
+      ].includes(String(service?.status || '').toLowerCase()),
+    ).length;
+  });
 
   readonly totalServices = computed(() => {
-    return this.status()
-      ?.summary
-      ?.total ?? 0;
-  });
+    const services = this.status()?.services ?? {};
 
+    return Object.keys(services).length;
+  });
 
   readonly allServicesOnline = computed(() => {
-    const total =
-      this.totalServices();
+    const total = this.totalServices();
 
-    return total > 0 &&
-      this.onlineServices() === total;
+    return total > 0 && this.onlineServices() === total;
   });
-
 
   // =========================
   // CONSTRUCTOR
   // =========================
 
-  constructor(
-    private readonly crm: CrmService
-  ) {}
-
+  constructor(private readonly crm: CrmService) {}
 
   // =========================
   // INIT
@@ -120,13 +92,11 @@ export class DashboardComponent implements OnInit {
     this.loadDashboard();
   }
 
-
   // =========================
   // LOAD DASHBOARD
   // =========================
 
   loadDashboard(): void {
-
     this.loading.set(true);
     this.error.set('');
 
@@ -134,146 +104,99 @@ export class DashboardComponent implements OnInit {
     let statusLoaded = false;
 
     const finishLoading = () => {
-
-      if (
-        leadsLoaded &&
-        statusLoaded
-      ) {
+      if (leadsLoaded && statusLoaded) {
         this.loading.set(false);
       }
-
     };
-
 
     // -------------------------
     // Leads
     // -------------------------
 
-    this.crm.getLeads()
-      .subscribe({
+    this.crm.getLeads().subscribe({
+      next: (response) => {
+        this.leads.set(response?.leads ?? []);
 
-        next: (response) => {
+        leadsLoaded = true;
 
-          this.leads.set(
-            response?.leads ?? []
-          );
+        finishLoading();
+      },
 
-          leadsLoaded = true;
+      error: (error) => {
+        console.error('Dashboard leads error:', error);
 
-          finishLoading();
-        },
+        this.error.set('Unable to load leads.');
 
-        error: (error) => {
+        leadsLoaded = true;
 
-          console.error(
-            'Dashboard leads error:',
-            error
-          );
-
-          this.error.set(
-            'Unable to load leads.'
-          );
-
-          leadsLoaded = true;
-
-          finishLoading();
-        }
-
-      });
-
+        finishLoading();
+      },
+    });
 
     // -------------------------
     // System Status
     // -------------------------
 
-    this.crm.getSystemStatus()
-      .subscribe({
+    this.crm.getSystemStatus().subscribe({
+      next: (response) => {
+        this.status.set(response);
 
-        next: (response) => {
+        statusLoaded = true;
 
-          this.status.set(
-            response
-          );
+        finishLoading();
+      },
 
-          statusLoaded = true;
+      error: (error) => {
+        console.error('Dashboard status error:', error);
 
-          finishLoading();
-        },
+        this.error.set('Unable to load system status.');
 
-        error: (error) => {
+        statusLoaded = true;
 
-          console.error(
-            'Dashboard status error:',
-            error
-          );
-
-          this.error.set(
-            'Unable to load system status.'
-          );
-
-          statusLoaded = true;
-
-          finishLoading();
-        }
-
-      });
-
+        finishLoading();
+      },
+    });
   }
-
 
   // =========================
   // SERVICE STATUS
   // =========================
 
-  isOnline(
-    service: string
-  ): boolean {
+  isOnline(service: string): boolean {
+    const status = this.status()?.services?.[service]?.status;
 
-    return this.status()
-      ?.services?.[service]
-      ?.status === 'online';
-
+    return [
+      'online',
+      'connected',
+      'ready',
+      'passed',
+      'active',
+      'working',
+      'configured',
+      'healthy',
+      'success',
+    ].includes(String(status || '').toLowerCase());
   }
-
 
   // =========================
   // HELPERS
   // =========================
 
-  getInitials(
-    name?: string
-  ): string {
-
+  getInitials(name?: string): string {
     if (!name?.trim()) {
       return '?';
     }
 
-    const parts =
-      name
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean);
+    const parts = name.trim().split(/\s+/).filter(Boolean);
 
     if (parts.length === 1) {
-
-      return parts[0]
-        .substring(0, 2)
-        .toUpperCase();
-
+      return parts[0].substring(0, 2).toUpperCase();
     }
 
-    return (
-      parts[0][0] +
-      parts[parts.length - 1][0]
-    ).toUpperCase();
-
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-
-  formatStatus(
-    status?: string
-  ): string {
-
+  formatStatus(status?: string): string {
     if (!status) {
       return 'Unknown';
     }
@@ -282,11 +205,6 @@ export class DashboardComponent implements OnInit {
       .replace(/[_-]+/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
-      .replace(
-        /\b\w/g,
-        char => char.toUpperCase()
-      );
-
+      .replace(/\b\w/g, (char) => char.toUpperCase());
   }
-
 }
