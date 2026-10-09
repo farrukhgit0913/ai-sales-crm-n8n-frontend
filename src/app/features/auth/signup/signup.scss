@@ -6,11 +6,11 @@ color: #172033;
 }
 
 .auth-page {
-min-height: 100vh;
+min-height: 90vh;
 display: flex;
 align-items: center;
 justify-content: center;
-padding: 32px 20px;
+padding: 12px;
 background:
 radial-gradient(circle at top left, #e8efff 0, transparent 40%),
 #f7f8fc;
@@ -19,7 +19,7 @@ radial-gradient(circle at top left, #e8efff 0, transparent 40%),
 .auth-card {
 width: 100%;
 max-width: 440px;
-padding: 36px;
+padding: 16px;
 background: #ffffff;
 border: 1px solid #e9edf5;
 border-radius: 20px;
@@ -52,7 +52,7 @@ font-size: 23px;
 }
 
 .auth-heading {
-margin: 34px 0 26px;
+margin: 16px;
 }
 
 .auth-heading h1 {
@@ -185,11 +185,11 @@ margin-left: 4px;
 
 @media (max-width: 480px) {
 .auth-page {
-padding: 18px 12px;
+padding: 12px;
 }
 
 .auth-card {
-padding: 25px 20px;
+padding: 16px;
 border-radius: 16px;
 }
 
