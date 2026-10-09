@@ -78,9 +78,11 @@ export class SigninComponent {
           // For cookie-based authentication, configure the
           // backend and HttpClient to use secure credentials.
           const token = response.accessToken || response.token;
+          const user = response.user;
 
           if (token) {
             sessionStorage.setItem("auth_token", token);
+            sessionStorage.setItem("auth_user", JSON.stringify(user));
           }
 
           // Adjust this route to your actual dashboard route.

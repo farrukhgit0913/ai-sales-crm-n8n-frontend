@@ -10,6 +10,12 @@ import {
 } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 
+interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -24,14 +30,18 @@ import { filter, Subscription } from 'rxjs';
 })
 export class App implements OnInit, OnDestroy {
   title = 'ai-sales-crm-n8n';
+
   profileMenuOpen = false;
   showAppLayout = true;
+
+  currentUser: AuthUser | null = null;
 
   private routerSubscription?: Subscription;
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
+    this.loadCurrentUser();
     this.updateLayout();
 
     this.routerSubscription = this.router.events
@@ -44,7 +54,59 @@ export class App implements OnInit, OnDestroy {
       .subscribe(() => {
         this.updateLayout();
         this.closeProfileMenu();
+
+        // Refresh user information after navigation.
+        this.loadCurrentUser();
       });
+  }
+
+  private loadCurrentUser(): void {
+    try {
+      const storedUser = sessionStorage.getItem('auth_user');
+
+      if (!storedUser) {
+        this.currentUser = null;
+        return;
+      }
+
+      const user: unknown = JSON.parse(storedUser);
+
+      if (
+        typeof user !== 'object' ||
+        user === null ||
+        !('id' in user) ||
+        !('name' in user) ||
+        !('email' in user) ||
+        typeof user.id !== 'string' ||
+        typeof user.name !== 'string' ||
+        typeof user.email !== 'string'
+      ) {
+        this.currentUser = null;
+        return;
+      }
+
+      this.currentUser = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      };
+    } catch {
+      this.currentUser = null;
+    }
+  }
+
+  getUserInitials(): string {
+    const name = this.currentUser?.name?.trim();
+
+    if (!name) {
+      return 'U';
+    }
+
+    return name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('');
   }
 
   private updateLayout(): void {
@@ -68,6 +130,8 @@ export class App implements OnInit, OnDestroy {
 
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('auth_user');
+
+    this.currentUser = null;
 
     void this.router.navigate(['/signin']);
   }
