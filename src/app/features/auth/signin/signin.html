@@ -92,18 +92,20 @@
           />
         </div>
 
-        <div *ngIf="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched || signinForm.submitted)" class="error-message">
-          Password is required.
-        </div>
+        <div class="password-footer-row">
+          <label class="show-password">
+            <input
+              type="checkbox"
+              [(ngModel)]="showPassword"
+              name="showPassword"
+            />
+            <span>Show password</span>
+          </label>
 
-        <label class="show-password">
-          <input
-            type="checkbox"
-            [(ngModel)]="showPassword"
-            name="showPassword"
-          />
-          <span>Show password</span>
-        </label>
+          <div *ngIf="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched || signinForm.submitted)" class="error-message">
+            Password is required.
+          </div>
+        </div>
       </div>
 
       <button type="submit" [disabled]="signinForm.invalid && signinForm.submitted">

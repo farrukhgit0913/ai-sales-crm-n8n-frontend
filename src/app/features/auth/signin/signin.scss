@@ -11,28 +11,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
+  padding: 32px 16px;
   background: 
-    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.07) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
     #f8fafc;
 }
 
 .auth-card {
   width: 100%;
   max-width: 440px;
-  padding: 36px 40px;
+  padding: 40px;
   background: #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.8);
   border-radius: 24px;
   box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.02),
-    0 20px 25px -5px rgba(15, 23, 42, 0.06),
+    0 4px 6px -1px rgba(0, 0, 0, 0.01),
+    0 20px 25px -5px rgba(15, 23, 42, 0.05),
     0 0 0 1px rgba(15, 23, 42, 0.02);
 }
 
 .brand-wrapper {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .brand {
@@ -50,27 +50,15 @@
   font-weight: 700;
 }
 
-.brand-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
 .auth-heading {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .auth-heading h1 {
-  margin: 0 0 8px;
-  font-size: 26px;
+  margin: 0 0 6px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.4px;
   color: #0f172a;
 }
 
@@ -82,13 +70,17 @@
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+}
+
+.form-group:last-of-type {
+  margin-bottom: 24px;
 }
 
 .form-group > label,
 .label-row label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-size: 13px;
   font-weight: 600;
   color: #334155;
@@ -98,6 +90,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 6px;
 }
 
 .label-row label {
@@ -116,7 +109,7 @@
   color: #94a3b8;
   display: flex;
   pointer-events: none;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .form-group input[type="email"],
@@ -125,7 +118,7 @@
   box-sizing: border-box;
   width: 100%;
   height: 46px;
-  padding: 0 14px 0 42px;
+  padding: 0 14px 0 44px;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
   outline: none;
@@ -167,7 +160,7 @@
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .text-link:hover {
@@ -175,11 +168,18 @@
   text-decoration: underline;
 }
 
+.password-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  min-height: 20px;
+}
+
 .show-password {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
   color: #64748b;
   font-size: 13px;
   cursor: pointer;
@@ -187,18 +187,22 @@
 }
 
 .show-password input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   accent-color: #4f46e5;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .error-message {
-  margin-top: 6px;
   color: #ef4444;
   font-size: 12px;
   font-weight: 500;
+  line-height: 1.2;
+}
+
+.form-group .error-message {
+  margin-top: 6px;
 }
 
 button[type="submit"] {
@@ -208,7 +212,6 @@ button[type="submit"] {
   gap: 8px;
   width: 100%;
   height: 48px;
-  margin-top: 8px;
   border: 0;
   border-radius: 12px;
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
@@ -241,7 +244,7 @@ button[type="submit"]:disabled {
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 24px 0;
+  margin: 22px 0;
   color: #cbd5e1;
   font-size: 12px;
   text-transform: uppercase;
@@ -281,12 +284,12 @@ button[type="submit"]:disabled {
 
 @media (max-width: 480px) {
   .auth-page {
-    padding: 12px;
-    align-items: flex-start;
+    padding: 16px 12px;
+    align-items: center;
   }
 
   .auth-card {
-    padding: 24px 20px;
+    padding: 28px 20px;
     border-radius: 20px;
     border: none;
     box-shadow: none;
