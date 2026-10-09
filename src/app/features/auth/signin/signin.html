@@ -1,0 +1,64 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <a routerLink="/dashboard" class="brand">
+      <span class="brand-icon">L</span>
+      <span>LeadPilot <strong>AI</strong></span>
+    </a>
+
+    <div class="auth-heading">
+      <h1>Welcome back</h1>
+      <p>Sign in to manage your leads and grow your business.</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #signinForm="ngForm">
+      <div class="form-group">
+        <label for="email">Work email</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="you@company.com"
+          autocomplete="email"
+          required
+          email
+        />
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label for="password">Password</label>
+          <a routerLink="/signin" class="text-link">Forgot password?</a>
+        </div>
+
+        <input
+          id="password"
+          [type]="showPassword ? 'text' : 'password'"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        />
+
+        <label class="show-password">
+          <input
+            type="checkbox"
+            [(ngModel)]="showPassword"
+            name="showPassword"
+          />
+          Show password
+        </label>
+      </div>
+
+      <button type="submit" [disabled]="signinForm.invalid">
+        Sign in
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Don't have an account?
+      <a routerLink="/signup">Create an account</a>
+    </p>
+  </div>
+</div>

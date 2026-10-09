@@ -1,56 +1,61 @@
-import { Routes } from "@angular/router";
+import { Routes } from '@angular/router';
 
-import { DashboardComponent } from "./features/dashboard/dashboard";
+import { DashboardComponent } from './features/dashboard/dashboard';
+import { LeadListComponent } from './features/leads/lead-list/lead-list';
+import { LeadCreateComponent } from './features/leads/lead-create/lead-create';
+import { LeadDetailComponent } from './features/leads/lead-detail/lead-detail';
+import { LeadEditComponent } from './features/leads/lead-edit/lead-edit';
+import { AiTestComponent } from './features/ai/ai-test/ai-test';
+import { WorkflowStatusComponent } from './features/workflows/workflow-status/workflow-status';
+import { EmailTestComponent } from './features/email/email-test/email-test';
 
-import { LeadListComponent } from "./features/leads/lead-list/lead-list";
-import { LeadCreateComponent } from "./features/leads/lead-create/lead-create";
-import { LeadDetailComponent } from "./features/leads/lead-detail/lead-detail";
-import { LeadEditComponent } from "./features/leads/lead-edit/lead-edit";
-import { AiTestComponent } from "./features/ai/ai-test/ai-test";
-import { WorkflowStatusComponent } from "./features/workflows/workflow-status/workflow-status";
-import { EmailTestComponent } from "./features/email/email-test/email-test";
+import { SigninComponent } from './features/auth/signin/signin';
+import { SignupComponent } from './features/auth/signup/signup';
 
 export const routes: Routes = [
   {
-    path: "",
-    redirectTo: "dashboard",
-    pathMatch: "full",
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
   },
-
   {
-    path: "dashboard",
+    path: 'signin',
+    component: SigninComponent,
+  },
+  {
+    path: 'signup',
+    component: SignupComponent,
+  },
+  {
+    path: 'dashboard',
     component: DashboardComponent,
   },
-
   {
-    path: "leads",
+    path: 'leads',
     component: LeadListComponent,
   },
-
   {
-    path: "leads/new",
+    path: 'leads/new',
     component: LeadCreateComponent,
   },
-
   {
-    path: "leads/:id/edit",
+    path: 'leads/:id/edit',
     component: LeadEditComponent,
   },
-
   {
-    path: "leads/:id",
+    path: 'leads/:id',
     component: LeadDetailComponent,
   },
   {
-    path: "ai-test",
+    path: 'ai-test',
     component: AiTestComponent,
   },
   {
-    path: "workflows",
+    path: 'workflows',
     component: WorkflowStatusComponent,
   },
   {
-    path: "email-test",
+    path: 'email-test',
     component: EmailTestComponent,
   },
 ];
