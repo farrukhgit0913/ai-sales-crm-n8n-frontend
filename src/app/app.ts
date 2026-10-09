@@ -1,5 +1,5 @@
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   Router,
@@ -30,6 +30,10 @@ interface AuthUser {
 })
 export class App implements OnInit, OnDestroy {
   title = 'ai-sales-crm-n8n';
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.closeProfileMenu();
+  }
 
   profileMenuOpen = false;
   showAppLayout = true;

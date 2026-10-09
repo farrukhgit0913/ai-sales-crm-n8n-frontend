@@ -145,7 +145,7 @@
 
           <div class="profile-menu">
 
-            <button type="button" class="profile-btn" (click)="toggleProfileMenu()"
+            <button type="button" class="profile-btn" (click)="$event.stopPropagation(); toggleProfileMenu()"
               [attr.aria-expanded]="profileMenuOpen" aria-label="Open profile menu" aria-haspopup="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                 stroke-linejoin="round" aria-hidden="true">
