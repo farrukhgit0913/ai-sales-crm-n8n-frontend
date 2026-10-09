@@ -238,35 +238,19 @@
               </svg>
             </button>
 
+            <!-- Updated Profile Dropdown -->
             <div
               class="profile-dropdown"
               [hidden]="!profileMenuOpen"
               role="menu"
             >
-              <div class="profile-dropdown-header">
-                <strong>Welcome to LeadPilot AI</strong>
-                <span>Manage your account</span>
+              <div class="profile-dropdown-user-card">
+                <div class="profile-dropdown-avatar" aria-hidden="true">L</div>
+                <div class="profile-dropdown-info">
+                  <span class="profile-dropdown-name">LeadPilot AI</span>
+                  <span class="profile-dropdown-email">sales@leadpilot.ai</span>
+                </div>
               </div>
-
-              <div class="profile-divider"></div>
-
-              <a
-                routerLink="/signin"
-                (click)="closeProfileMenu()"
-                role="menuitem"
-              >
-                <span class="dropdown-icon">↪</span>
-                <span>Sign In</span>
-              </a>
-
-              <a
-                routerLink="/signup"
-                (click)="closeProfileMenu()"
-                role="menuitem"
-              >
-                <span class="dropdown-icon">＋</span>
-                <span>Sign Up</span>
-              </a>
 
               <div class="profile-divider"></div>
 
