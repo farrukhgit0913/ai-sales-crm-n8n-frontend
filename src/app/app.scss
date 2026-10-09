@@ -314,7 +314,6 @@ svg {
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 11px;
 
-  background: linear-gradient(145deg, #818cf8, #4f46e5);
   color: #fff;
 
   font-size: 14px;
@@ -591,16 +590,38 @@ svg {
 }
 
 .profile-dropdown-avatar {
-  display: grid;
-  place-items: center;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(145deg, #818cf8, #4f46e5);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-dropdown-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.user-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
 }
 
 .profile-dropdown-info {

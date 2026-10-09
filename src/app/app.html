@@ -6,7 +6,7 @@
     <aside class="sidebar">
 
       <!-- Brand -->
-    <div class="brand">
+      <div class="brand">
         <div class="brand-logo">
           <img src="logo.png" alt="LeadPilot AI logo" width="38" height="38" />
         </div>
@@ -79,7 +79,7 @@
       <div class="sidebar-footer">
         <div class="user-pill">
           <div class="user-avatar" aria-hidden="true">
-            {{ getUserInitials() }}
+            <img src="profile.jpeg" alt="" class="user-avatar-image" />
           </div>
 
           <div class="user-info">
@@ -140,8 +140,8 @@
             <div class="profile-dropdown" [hidden]="!profileMenuOpen" role="menu">
 
               <div class="profile-dropdown-user-card">
-                <div class="profile-dropdown-avatar" aria-hidden="true">
-                  {{ getUserInitials() }}
+                <div class="profile-dropdown-avatar">
+                  <img src="profile.jpeg" alt="User profile" class="profile-dropdown-avatar-image" />
                 </div>
 
                 <div class="profile-dropdown-info">
