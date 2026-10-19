@@ -11,6 +11,7 @@ import { EmailTestComponent } from './features/email/email-test/email-test';
 
 import { SigninComponent } from './features/auth/signin/signin';
 import { SignupComponent } from './features/auth/signup/signup';
+import { ServicesComponent } from './features/services/services';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,10 @@ export const routes: Routes = [
   {
     path: 'ai-test',
     component: AiTestComponent,
+  },
+  {
+    path: 'services',
+    component: ServicesComponent,
   },
   {
     path: 'workflows',

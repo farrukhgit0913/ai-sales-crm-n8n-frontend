@@ -1,0 +1,215 @@
+
+<main class="services-page">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        BUSINESS SOLUTIONS
+      </div>
+
+      <h1>Services</h1>
+
+      <p class="page-description">
+        Discover tools and solutions to automate your sales process
+        and grow your business.
+      </p>
+    </div>
+
+    <div class="header-stat">
+      <span class="stat-label">Available services</span>
+      <strong>{{ services.length }}</strong>
+      <span class="stat-caption">Solutions for your business</span>
+    </div>
+  </header>
+
+  <section class="toolbar">
+    <div class="search-box">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <circle
+          cx="10.8"
+          cy="10.8"
+          r="6.8"
+          stroke="currentColor"
+          stroke-width="1.7"
+        />
+        <path
+          d="m16 16 4.5 4.5"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+        />
+      </svg>
+
+      <input
+        type="search"
+        [(ngModel)]="searchTerm"
+        placeholder="Search services..."
+        aria-label="Search services"
+      />
+
+      <button
+        *ngIf="searchTerm"
+        class="clear-search"
+        type="button"
+        aria-label="Clear search"
+        (click)="searchTerm = ''"
+      >
+        &times;
+      </button>
+    </div>
+
+    <span class="results-count">
+      {{ filteredServices.length }}
+      {{ filteredServices.length === 1 ? 'service' : 'services' }}
+    </span>
+  </section>
+
+  <nav class="category-list" aria-label="Service categories">
+    <button
+      *ngFor="let category of categories"
+      type="button"
+      class="category-button"
+      [class.active]="selectedCategory === category"
+      [attr.aria-pressed]="selectedCategory === category"
+      (click)="selectCategory(category)"
+    >
+      {{ category }}
+    </button>
+  </nav>
+
+  <section class="services-grid" aria-label="Available services">
+    <article
+      class="service-card"
+      *ngFor="
+        let service of filteredServices;
+        trackBy: trackByServiceId
+      "
+    >
+      <div class="card-top">
+        <div class="service-icon">
+          {{ service.icon }}
+        </div>
+
+        <span *ngIf="service.popular" class="popular-label">
+          Popular
+        </span>
+      </div>
+
+      <span class="service-category">
+        {{ service.category }}
+      </span>
+
+      <h2>{{ service.name }}</h2>
+
+      <p class="service-description">
+        {{ service.description }}
+      </p>
+
+      <ul class="feature-list">
+        <li *ngFor="let feature of service.features">
+          <span class="check-icon" aria-hidden="true">✓</span>
+          {{ feature }}
+        </li>
+      </ul>
+
+      <div class="card-footer">
+        <div class="price">
+          <span class="currency">$</span>{{ service.price }}
+          <span class="billing">{{ service.billing }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="details-button"
+          (click)="viewService(service)"
+        >
+          View details
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </article>
+
+    <div
+      class="empty-state"
+      *ngIf="filteredServices.length === 0"
+    >
+      <div class="empty-icon">⌕</div>
+      <h2>No services found</h2>
+      <p>
+        Try another search term or choose a different category.
+      </p>
+
+      <button
+        type="button"
+        class="reset-button"
+        (click)="searchTerm = ''; selectedCategory = 'All'"
+      >
+        Clear filters
+      </button>
+    </div>
+  </section>
+
+  <div
+    class="modal-backdrop"
+    *ngIf="selectedService as service"
+    (click)="closeServiceDetails()"
+  >
+    <section
+      class="service-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="service-modal-title"
+      (click)="$event.stopPropagation()"
+    >
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Close service details"
+        (click)="closeServiceDetails()"
+      >
+        &times;
+      </button>
+
+      <div class="service-icon modal-icon">
+        {{ service.icon }}
+      </div>
+
+      <span class="service-category">
+        {{ service.category }}
+      </span>
+
+      <h2 id="service-modal-title">{{ service.name }}</h2>
+
+      <p class="service-description modal-description">
+        {{ service.description }}
+      </p>
+
+      <div class="modal-price">
+        <span class="currency">$</span>{{ service.price }}
+        <span class="billing">{{ service.billing }}</span>
+      </div>
+
+      <h3>What's included</h3>
+
+      <ul class="feature-list modal-features">
+        <li *ngFor="let feature of service.features">
+          <span class="check-icon" aria-hidden="true">✓</span>
+          {{ feature }}
+        </li>
+      </ul>
+
+      <button
+        type="button"
+        class="primary-button"
+        (click)="requestService(service)"
+      >
+        Request this service
+        <span aria-hidden="true">→</span>
+      </button>
+    </section>
+  </div>
+</main>
